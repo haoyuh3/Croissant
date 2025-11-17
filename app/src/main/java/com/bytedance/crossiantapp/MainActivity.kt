@@ -15,6 +15,8 @@ import com.bytedance.crossiantapp.ui.theme.CrossiantAppTheme
 import androidx.compose.runtime.*
 import com.bytedance.crossiantapp.presentation.components.BottomNavItem
 import com.bytedance.crossiantapp.presentation.components.BottomNavigationBar
+import com.bytedance.crossiantapp.presentation.home.HomeScreen
+import com.bytedance.crossiantapp.presentation.profile.ProfileScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,12 +24,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CrossiantAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainScreen()
             }
         }
     }
@@ -40,15 +37,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         modifier = modifier
     )
 }
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CrossiantAppTheme {
-        Greeting("Android")
-    }
-}
-
 @Composable
 fun MainScreen() {
     // 使用remember保存选中的Tab状态
@@ -66,15 +54,24 @@ fun MainScreen() {
     ) { paddingValues ->
         // 根据选中的Tab显示不同的内容
         when (selectedTab) {
-//            BottomNavItem.HOME -> HomeScreen(
-//                modifier = Modifier.padding(paddingValues)
-//            )
-//            BottomNavItem.PROFILE -> ProfileScreen(
-//                modifier = Modifier.padding(paddingValues)
-//            )
+            BottomNavItem.HOME -> HomeScreen(
+                modifier = Modifier.padding(paddingValues)
+            )
+            BottomNavItem.PROFILE -> ProfileScreen(
+                modifier = Modifier.padding(paddingValues)
+            )
             else -> {
                 // 其他Tab暂时不实现
             }
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    CrossiantAppTheme {
+        MainScreen()
+    }
+}
+
