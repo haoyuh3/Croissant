@@ -18,11 +18,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // ARouter configuration
-        ksp {
-            arg("AROUTER_MODULE_NAME", project.name)
-        }
     }
 
     buildTypes {
@@ -54,6 +49,11 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
+
+// KSP configuration for ARouter
+ksp {
+    arg("AROUTER_MODULE_NAME", project.name)
 }
 
 dependencies {
