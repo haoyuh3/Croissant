@@ -51,11 +51,6 @@ android {
     }
 }
 
-// KSP configuration for ARouter
-ksp {
-    arg("AROUTER_MODULE_NAME", project.name)
-}
-
 dependencies {
     // AndroidX Core
     implementation(libs.androidx.core.ktx)
@@ -90,10 +85,6 @@ dependencies {
 
     // MMKV
     implementation(libs.mmkv)
-
-    // ARouter
-    implementation(libs.arouter.api)
-    ksp(libs.arouter.compiler)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
