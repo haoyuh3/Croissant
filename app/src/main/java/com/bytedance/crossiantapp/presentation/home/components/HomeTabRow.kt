@@ -23,20 +23,21 @@ import com.bytedance.crossiantapp.presentation.home.HomeTabItem
 fun HomeTabRow(
     selectedTab: HomeTabItem,
     onTabSelected: (HomeTabItem) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,  // 两端对齐
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween, // 两端对齐
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         // 左侧的Tab列表
         Row(
             horizontalArrangement = Arrangement.spacedBy(24.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             HomeTabItem.entries.forEach { tab ->
                 HomeTabButton(
@@ -46,7 +47,7 @@ fun HomeTabRow(
                         if (tab.isEnabled) {
                             onTabSelected(tab)
                         }
-                    }
+                    },
                 )
             }
         }
@@ -54,12 +55,12 @@ fun HomeTabRow(
         // 右侧的搜索图标
         IconButton(
             onClick = { /* 搜索功能暂不实现 */ },
-            enabled = false
+            enabled = false,
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "搜索",
-                tint = Color.Gray
+                tint = Color.Gray,
             )
         }
     }
@@ -73,37 +74,39 @@ private fun HomeTabButton(
     tab: HomeTabItem,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Tab文字
         TextButton(
             onClick = onClick,
             enabled = tab.isEnabled,
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
         ) {
             Text(
                 text = tab.title,
                 style = MaterialTheme.typography.titleMedium,
                 color = if (isSelected) Color.Black else Color.Gray,
-                fontWeight = if (isSelected) {
-                    androidx.compose.ui.text.font.FontWeight.Bold
-                } else {
-                    androidx.compose.ui.text.font.FontWeight.Normal
-                }
+                fontWeight =
+                    if (isSelected) {
+                        androidx.compose.ui.text.font.FontWeight.Bold
+                    } else {
+                        androidx.compose.ui.text.font.FontWeight.Normal
+                    },
             )
         }
 
         // 选中时的下划线
         if (isSelected) {
             Box(
-                modifier = Modifier
-                    .width(24.dp)
-                    .height(3.dp)
-                    .background(Color.Black)
+                modifier =
+                    Modifier
+                        .width(24.dp)
+                        .height(3.dp)
+                        .background(Color.Black),
             )
         } else {
             Spacer(modifier = Modifier.height(3.dp))

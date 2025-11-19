@@ -1,6 +1,5 @@
 package com.bytedance.crossiantapp
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,9 +41,10 @@ fun MainScreen() {
     // 创建导航控制器
     val navController = rememberNavController()
 
-    // 记住当前选中的底部Tab
+    // 更新当前选中的底部Tab
     var selectedBottomTab by remember { mutableStateOf(BottomNavItem.HOME) }
 
+    // Scaffold 搭建屏幕框架 底部放上BottomNavigationBar
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
@@ -59,6 +59,7 @@ fun MainScreen() {
                         BottomNavItem.HOME -> {
                             navController.navigate(Routes.HOME) {
                                 // 避免返回栈堆积
+                                // @note 导航会产生栈堆积
                                 popUpTo(Routes.HOME) { inclusive = true }
                             }
                         }
@@ -71,15 +72,14 @@ fun MainScreen() {
                             // 其他Tab暂不处理
                         }
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
-        // 导航宿主
+        // @note 导航填充paddingValues
         NavGraph(
             navController = navController,
-            startDestination = Routes.HOME
+            startDestination = Routes.HOME,
         )
     }
 }
-

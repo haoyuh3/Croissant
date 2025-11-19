@@ -14,7 +14,7 @@ import com.bytedance.crossiantapp.presentation.profile.ProfileScreen
 object Routes {
     const val HOME = "home"
     const val PROFILE = "profile"
-    const val DETAIL = "detail/{postId}"  // 详情页，带参数
+    const val DETAIL = "detail/{postId}" // 详情页，带参数
 
     // 生成详情页路由的辅助函数
     fun detail(postId: String) = "detail/$postId"
@@ -29,11 +29,11 @@ object Routes {
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    startDestination: String = Routes.HOME
+    startDestination: String = Routes.HOME,
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
     ) {
         // 首页
         composable(route = Routes.HOME) {
@@ -41,7 +41,7 @@ fun NavGraph(
                 onNavigateToDetail = { postId ->
                     // 跳转到详情页
                     navController.navigate(Routes.detail(postId))
-                }
+                },
             )
         }
 

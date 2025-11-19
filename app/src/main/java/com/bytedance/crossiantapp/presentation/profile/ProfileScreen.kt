@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * 个人主页（简洁版）
+ * 个人主页
  */
 @Composable
 fun ProfileScreen(
