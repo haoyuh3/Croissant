@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -78,6 +79,7 @@ fun MainScreen() {
     ) { paddingValues ->
         // @note 导航填充paddingValues
         NavGraph(
+            modifier = Modifier.padding(paddingValues),
             navController = navController,
             startDestination = Routes.HOME,
         )

@@ -53,7 +53,6 @@ enum class BottomNavItem(
     ),
 }
 
-@Suppress("ktlint:standard:function-naming")
 /**
  * 底部导航栏组件
  *

@@ -1,6 +1,7 @@
 package com.bytedance.crossiantapp.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,12 +29,14 @@ object Routes {
  */
 @Composable
 fun NavGraph(
+    modifier: Modifier = Modifier,
     navController: NavHostController,
     startDestination: String = Routes.HOME,
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
+        modifier = modifier,
     ) {
         // 首页
         composable(route = Routes.HOME) {
