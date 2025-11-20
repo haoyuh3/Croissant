@@ -47,18 +47,25 @@ class HomeViewModel @Inject constructor(
     fun loadFeed() {
         viewModelScope.launch {
             _uiState.value = FeedUiState.Loading
+            println("HomeViewModel: 开始加载Feed...")
 
             try {
                 val posts = getFeedUseCase(count = 20)
+                println("HomeViewModel: 从API获取到 ${posts.size} 条数据")
+
                 val postsWithLocalState = enrichPostsWithLocalState(posts)
 
                 _posts.value = postsWithLocalState
                 _uiState.value = if (postsWithLocalState.isEmpty()) {
+                    println("HomeViewModel: 数据为空，显示Empty状态")
                     FeedUiState.Empty
                 } else {
+                    println("HomeViewModel: 加载成功，共 ${postsWithLocalState.size} 条")
                     FeedUiState.Success
                 }
             } catch (e: Exception) {
+                println("HomeViewModel: 加载失败 - ${e.message}")
+                e.printStackTrace()
                 _uiState.value = FeedUiState.Error(e.message ?: "未知错误")
             }
         }

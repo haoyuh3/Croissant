@@ -14,15 +14,34 @@ class FeedRepositoryImpl @Inject constructor(
 
     override suspend fun getFeed(count: Int, acceptVideoClip: Boolean): Result<List<Post>> {
         return try {
+            println("FeedRepository: 开始请求API - count=$count, acceptVideoClip=$acceptVideoClip")
             val response = feedApi.getFeed(count, acceptVideoClip)
+            println("FeedRepository: API响应 - statusCode=${response.statusCode}, postList size=${response.postList?.size ?: 0}")
 
             if (response.statusCode == 0 && response.postList != null) {
-                val posts = response.postList.map { it.toDomain() }
+                val posts = response.postList
+                    .mapNotNull { dto ->
+                        try {
+                            // 验证关键字段
+                            if (dto.postId.isNullOrBlank()) {
+                                println("FeedRepository: 跳过无效数据 - postId为空")
+                                return@mapNotNull null
+                            }
+                            dto.toDomain()
+                        } catch (e: Exception) {
+                            println("FeedRepository: 转换失败 - ${e.message}")
+                            null
+                        }
+                    }
+                println("FeedRepository: 成功转换 ${posts.size} 条有效数据")
                 Result.success(posts)
             } else {
+                println("FeedRepository: API返回错误 - statusCode=${response.statusCode}")
                 Result.failure(Exception("API返回错误: ${response.statusCode}"))
             }
         } catch (e: Exception) {
+            println("FeedRepository: 请求失败 - ${e.message}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }

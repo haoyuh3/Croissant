@@ -25,19 +25,19 @@ data class FeedResponse(
  */
 data class PostDto(
     @SerializedName("post_id")
-    val postId: String,
+    val postId: String?,
 
-    val title: String,
-    val content: String,
+    val title: String?,
+    val content: String?,
 
     @SerializedName("hashtag")
-    val hashtags: List<HashtagDto>,
+    val hashtags: List<HashtagDto>?,  // 可能为 null
 
     @SerializedName("create_time")
-    val createTime: Long,
+    val createTime: Long?,
 
-    val author: AuthorDto,
-    val clips: List<ClipDto>,
+    val author: AuthorDto?,
+    val clips: List<ClipDto>?,  // 可能为 null
     val music: MusicDto?
 )
 
@@ -75,13 +75,13 @@ data class MusicDto(
  */
 fun PostDto.toDomain(): Post {
     return Post(
-        postId = postId,
-        title = title,
-        content = content,
-        hashtags = hashtags.map { it.toDomain() },
-        createTime = createTime,
-        author = author.toDomain(),
-        clips = clips.map { it.toDomain() },
+        postId = postId ?: "",
+        title = title ?: "",
+        content = content ?: "",
+        hashtags = hashtags?.map { it.toDomain() } ?: emptyList(),  // 处理 null
+        createTime = createTime ?: 0L,
+        author = author?.toDomain() ?: Author("", "未知用户", ""),
+        clips = clips?.map { it.toDomain() } ?: emptyList(),  // 处理 null
         music = music?.toDomain(),
         likeCount = 0,  // 默认值，实际应从API返回
         isLiked = false  // 将在ViewModel中从MMKV读取
