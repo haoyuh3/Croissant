@@ -33,6 +33,7 @@ class FeedRepositoryImpl @Inject constructor(
                             null
                         }
                     }
+                    .distinctBy { it.postId }  // 根据postId去重，防止API返回重复数据
                 println("FeedRepository: 成功转换 ${posts.size} 条有效数据")
                 Result.success(posts)
             } else {

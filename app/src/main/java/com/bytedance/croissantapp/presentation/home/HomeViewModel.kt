@@ -109,7 +109,11 @@ class HomeViewModel @Inject constructor(
                 val newPosts = getFeedUseCase(count = 20)
                 val postsWithLocalState = enrichPostsWithLocalState(newPosts)
 
-                _posts.value = _posts.value + postsWithLocalState
+                // 防止追加重复数据（API可能每次返回相同内容）
+                val existingPostIds = _posts.value.map { it.postId }.toSet()
+                val uniqueNewPosts = postsWithLocalState.filter { it.postId !in existingPostIds }
+
+                _posts.value += uniqueNewPosts
             } catch (e: Exception) {
                 // 加载更多失败时忽略
             } finally {
