@@ -42,7 +42,7 @@ fun MainScreen() {
     // 创建导航控制器
     val navController = rememberNavController()
 
-    // 更新当前选中的底部Tab
+    // 更新当前选中的底部Tab 默认值为首页
     var selectedBottomTab by remember { mutableStateOf(BottomNavItem.HOME) }
 
     // Scaffold 搭建屏幕框架 底部放上BottomNavigationBar

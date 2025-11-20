@@ -1,9 +1,11 @@
 package com.bytedance.croissantapp.presentation.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -84,7 +86,7 @@ fun HomeScreen(
  * @param modifier 修饰符
  */
 @Composable
-private fun CommunityTabContent(
+fun CommunityTabContent(
     onNavigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -129,7 +131,7 @@ private fun CommunityTabContent(
  * @param modifier 修饰符
  */
 @Composable
-private fun DisabledTabContent(
+fun DisabledTabContent(
     tabName: String,
     modifier: Modifier = Modifier,
 ) {
