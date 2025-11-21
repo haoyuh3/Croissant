@@ -14,14 +14,11 @@ import com.bytedance.croissantapp.presentation.profile.ProfileScreen
 object Routes {
     const val HOME = "home"
     const val PROFILE = "profile"
-    const val DETAIL = "detail/{postId}" // 详情页，带参数
-
-    // 生成详情页路由的辅助函数
-    fun detail(postId: String) = "detail/$postId"
 }
 
 /**
  * 应用的导航图
+ * 用于导航到不同的内容
  *
  * @param navController 导航控制器
  * @param startDestination 起始目的地
@@ -40,10 +37,7 @@ fun NavGraph(
         // 首页
         composable(route = Routes.HOME) {
             HomeScreen(
-                onNavigateToDetail = { postId ->
-                    // 跳转到详情页
-                    navController.navigate(Routes.detail(postId))
-                },
+                onNavigateToDetail = {},
             )
         }
 
@@ -52,13 +46,5 @@ fun NavGraph(
             ProfileScreen()
         }
 
-        // 详情页（后续实现）
-        composable(route = Routes.DETAIL) { backStackEntry ->
-            // 获取路由参数
-            val postId = backStackEntry.arguments?.getString("postId")
-
-            // TODO: 实现详情页
-            // DetailScreen(postId = postId ?: "")
-        }
     }
 }

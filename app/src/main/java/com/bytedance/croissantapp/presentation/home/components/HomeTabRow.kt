@@ -52,17 +52,17 @@ fun HomeTabRow(
             }
         }
 
-        // 右侧的搜索图标
-        IconButton(
-            onClick = { /* 搜索功能暂不实现 */ },
-            enabled = false,
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "搜索",
-                tint = Color.Gray,
-            )
-        }
+//        // 右侧的搜索图标
+//        IconButton(
+//            onClick = { /* 搜索功能暂不实现 */ },
+//            enabled = false,
+//        ) {
+//            Icon(
+//                imageVector = Icons.Default.Search,
+//                contentDescription = "搜索",
+//                tint = Color.Gray,
+//            )
+//        }
     }
 }
 
