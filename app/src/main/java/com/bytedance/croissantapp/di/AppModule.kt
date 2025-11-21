@@ -3,6 +3,7 @@ package com.bytedance.croissantapp.di
 import com.bytedance.croissantapp.data.remote.FeedApi
 import com.bytedance.croissantapp.domain.repository.FeedRepository
 import com.bytedance.croissantapp.domain.repository.FeedRepositoryImpl
+import com.bytedance.croissantapp.domain.usecase.GetPostDetailUseCase
 import com.bytedance.croissantapp.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -66,5 +67,13 @@ object AppModule {
     @Singleton
     fun provideFeedRepository(feedApi: FeedApi): FeedRepository {
         return FeedRepositoryImpl(feedApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetPostDetailUseCase(
+        feedRepository: FeedRepository
+    ): GetPostDetailUseCase {
+        return GetPostDetailUseCase(feedRepository)
     }
 }
