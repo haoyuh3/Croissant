@@ -42,9 +42,38 @@ class UserPreferencesRepository @Inject constructor() {
         return mmkv?.decodeBool(KEY_MUSIC_MUTE, false) ?: false
     }
 
+    // ==================== 用户资料 ====================
+
+    fun setUserNickname(nickname: String) {
+        mmkv?.encode(KEY_USER_NICKNAME, nickname)
+    }
+
+    fun getUserNickname(): String {
+        return mmkv?.decodeString(KEY_USER_NICKNAME, "用户昵称") ?: "用户昵称"
+    }
+
+    fun setUserBio(bio: String) {
+        mmkv?.encode(KEY_USER_BIO, bio)
+    }
+
+    fun getUserBio(): String {
+        return mmkv?.decodeString(KEY_USER_BIO, "这里是个人简介") ?: "这里是个人简介"
+    }
+
+    fun setUserAvatar(uri: String) {
+        mmkv?.encode(KEY_USER_AVATAR, uri)
+    }
+
+    fun getUserAvatar(): String? {
+        return mmkv?.decodeString(KEY_USER_AVATAR, null)
+    }
+
     companion object {
         private const val KEY_LIKE_PREFIX = "like_status_"
         private const val KEY_FOLLOW_PREFIX = "follow_status_"
         private const val KEY_MUSIC_MUTE = "music_mute_status"
+        private const val KEY_USER_NICKNAME = "user_nickname"
+        private const val KEY_USER_BIO = "user_bio"
+        private const val KEY_USER_AVATAR = "user_avatar"
     }
 }
