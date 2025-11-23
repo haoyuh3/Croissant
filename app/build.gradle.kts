@@ -88,9 +88,6 @@ dependencies {
     implementation(libs.fresco.animated.gif)
     implementation(libs.fresco.webp)
 
-    // MMKV
-    implementation(libs.mmkv)
-
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)

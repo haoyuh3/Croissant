@@ -1,7 +1,6 @@
 package com.bytedance.croissantapp
 
 import android.app.Application
-import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 
 /**
@@ -15,9 +14,5 @@ class CroissantApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
-        // 初始化MMKV
-        val rootDir = MMKV.initialize(this)
-        println("MMKV初始化完成，根目录: $rootDir")
     }
 }

@@ -21,9 +21,6 @@ gson = "2.10.1"
 # Image Loading - Fresco
 fresco = "3.1.3"
 
-# Local Storage - MMKV
-mmkv = "1.3.2"
-
 # Router - ARouter
 arouter = "1.5.2"
 
@@ -93,9 +90,6 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 fresco = { group = "com.facebook.fresco", name = "fresco", version.ref = "fresco" }
 fresco-animated-gif = { group = "com.facebook.fresco", name = "animated-gif", version.ref = "fresco" }
 fresco-webp = { group = "com.facebook.fresco", name = "webpsupport", version.ref = "fresco" }
-
-# MMKV
-mmkv = { group = "com.tencent", name = "mmkv", version.ref = "mmkv" }
 
 # ARouter
 arouter-api = { group = "com.alibaba", name = "arouter-api", version.ref = "arouter" }
