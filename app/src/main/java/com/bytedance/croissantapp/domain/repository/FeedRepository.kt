@@ -11,5 +11,5 @@ interface FeedRepository {
     /**
      * 从缓存中获取指定Post
      */
-    fun getCachedPost(postId: String): Post?
+    suspend fun getCachedPost(postId: String): Post?
 }

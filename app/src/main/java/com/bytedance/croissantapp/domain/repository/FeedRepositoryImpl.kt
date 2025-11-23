@@ -6,6 +6,8 @@ import com.bytedance.croissantapp.data.local.mapper.toEntityList
 import com.bytedance.croissantapp.data.model.toDomain
 import com.bytedance.croissantapp.data.remote.FeedApi
 import com.bytedance.croissantapp.domain.model.Post
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -50,7 +52,9 @@ class FeedRepositoryImpl @Inject constructor(
 
                 if (posts.isNotEmpty()) {
                     // 将 Post 转换为 PostEntity 后插入数据库
-                    postDao.insert(posts.toEntityList())
+                    withContext(Dispatchers.IO) {
+                        postDao.insert(posts.toEntityList())
+                    }
                     println("FeedRepository: 成功转换并向数据库插入 ${posts.size} 条数据")
                 }
                 println("FeedRepository: 成功转换 ${posts.size} 条有效数据，已缓存")
@@ -66,8 +70,10 @@ class FeedRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCachedPost(postId: String): Post? {
+    override suspend fun getCachedPost(postId: String): Post? {
         // 从数据库查询 PostEntity，然后转换为 Post
-        return postDao.findPostById(postId)?.toDomain()
+        return withContext(Dispatchers.IO) {
+            postDao.findPostById(postId)?.toDomain()
+        }
     }
 }
