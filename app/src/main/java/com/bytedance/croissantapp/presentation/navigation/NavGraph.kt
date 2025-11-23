@@ -40,11 +40,18 @@ fun NavGraph(
     ) {
         // 首页
         composable(route = Routes.HOME) {
+            backStackEntry ->
+            // 监听从详情页返回的结果
+            val shouldRefresh = backStackEntry
+                .savedStateHandle
+                .getStateFlow("refresh_from_detail", false)
+
             HomeScreen(
                 onNavigateToDetail = { postId ->
                     // 跳转到详情页
                     navController.navigate(Routes.detail(postId))
                 },
+                shouldRefresh = shouldRefresh
             )
         }
 
@@ -61,6 +68,11 @@ fun NavGraph(
             DetailScreen(
                 postId = postId ?: "",
                 onNavigateBack = {
+                    // 返回前设置刷新信号（在动画开始前立即触发）
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("refresh_from_detail", true)
+
                     navController.navigateUp()
                 }
             )

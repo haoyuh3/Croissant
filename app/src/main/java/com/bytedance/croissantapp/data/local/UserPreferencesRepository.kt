@@ -7,6 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import com.bytedance.croissantapp.util.Constants
 import androidx.core.content.edit
+
 /**
  * 用户偏好设置管理（基于SharedPreferences）
  */
@@ -25,6 +26,14 @@ class UserPreferencesRepository @Inject constructor(
 
     fun getLikeStatus(postId: String): Boolean {
         return sharedPreferences.getBoolean(Constants.KEY_LIKE_PREFIX + postId, false)
+    }
+
+    fun setLikeCount(postId: String, count: Int) {
+        sharedPreferences.edit{putInt(Constants.KEY_LIKE_COUNT_PREFIX + postId, count)}
+    }
+
+    fun getLikeCount(postId: String): Int{
+        return sharedPreferences.getInt(Constants.KEY_LIKE_COUNT_PREFIX + postId, 0)
     }
 
     // ==================== 关注状态 ====================

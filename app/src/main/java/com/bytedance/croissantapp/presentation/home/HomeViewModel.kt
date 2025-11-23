@@ -145,22 +145,31 @@ class HomeViewModel @Inject constructor(
         val updatedPosts = currentPosts.map { post ->
             if (post.postId == postId) {
                 val newLikedStatus = !post.isLiked
+                val newLikeCount = if (newLikedStatus) post.likeCount + 1 else (post.likeCount - 1).coerceAtLeast(0)
+
                 // 保存到本地
                 preferencesRepository.setLikeStatus(postId, newLikedStatus)
+                preferencesRepository.setLikeCount(post.postId, newLikeCount)
                 // 更新模型
                 post.copy(
                     isLiked = newLikedStatus,
-                    likeCount = if (newLikedStatus) {
-                        post.likeCount + 1
-                    } else {
-                        (post.likeCount - 1).coerceAtLeast(0)
-                    }
+                    likeCount = newLikeCount
                 )
             } else {
                 post
             }
         }
         _posts.value = updatedPosts
+    }
+
+    // ==================== 公共方法 ====================
+
+    /**
+     * 刷新本地状态（从SharedPreferences重新读取点赞、关注状态）
+     * 用于从详情页返回时同步状态
+     */
+    fun refreshLocalState() {
+        _posts.value = fillWithLocalState(_posts.value)
     }
 
     // ==================== 私有方法 ====================
@@ -174,7 +183,8 @@ class HomeViewModel @Inject constructor(
                 isLiked = preferencesRepository.getLikeStatus(post.postId),
                 author = post.author.copy(
                     isFollowed = preferencesRepository.getFollowStatus(post.author.userId)
-                )
+                ),
+                likeCount = preferencesRepository.getLikeCount(post.postId)
             )
         }
     }

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bytedance.croissantapp.presentation.home.components.HomeTabRow
 import com.bytedance.croissantapp.presentation.home.components.PostCard
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * 首页主界面
@@ -39,6 +40,7 @@ fun HomeScreen(
     onNavigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
+    shouldRefresh: StateFlow<Boolean>? = null
 ) {
     // 当前选中的Tab
     var selectedTab by remember { mutableStateOf(HomeTabItem.getDefault()) }
@@ -78,7 +80,8 @@ fun HomeScreen(
             when (selectedTab) {
                 HomeTabItem.COMMUNITY -> CommunityTabContent(
                     onNavigateToDetail = onNavigateToDetail,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    shouldRefresh = shouldRefresh
                 )
 //                HomeTabItem.GROUP_BUY -> DisabledTabContent("团购")
 //                HomeTabItem.FOLLOW -> DisabledTabContent("关注")
@@ -97,13 +100,26 @@ fun HomeScreen(
 private fun CommunityTabContent(
     onNavigateToDetail: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    shouldRefresh: StateFlow<Boolean>? = null
 ) {
     // 订阅ViewModel状态
     val uiState by viewModel.uiState.collectAsState()
     val posts by viewModel.posts.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
+
+    // 监听从详情页返回的刷新信号
+    shouldRefresh?.let { flow ->
+        val refresh by flow.collectAsState()
+        LaunchedEffect(refresh) {
+            if (refresh) {
+                viewModel.refreshLocalState()
+                // 重置信号，避免下次进入时重复刷新
+                // 注意：这里无法直接访问 savedStateHandle，需要在导航层面处理
+            }
+        }
+    }
 
     // 下拉刷新状态
     val pullRefreshState = rememberPullRefreshState(

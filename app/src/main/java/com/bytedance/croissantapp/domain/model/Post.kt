@@ -12,8 +12,8 @@ data class Post(
     val author: Author,
     val clips: List<Clip>,
     val music: Music?,
-    val likeCount: Int = 0,
-    val isLiked: Boolean = false  // 从sharePreference读取的本地状态
+    val likeCount: Int = 0,         // 从sharePreference读取的本地状态
+    val isLiked: Boolean = false    // 从sharePreference读取的本地状态
 )
 
 /**
