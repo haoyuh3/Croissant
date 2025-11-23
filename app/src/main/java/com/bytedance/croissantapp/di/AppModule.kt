@@ -1,5 +1,6 @@
 package com.bytedance.croissantapp.di
 
+import com.bytedance.croissantapp.data.local.dao.PostDao
 import com.bytedance.croissantapp.data.remote.FeedApi
 import com.bytedance.croissantapp.domain.repository.FeedRepository
 import com.bytedance.croissantapp.domain.repository.FeedRepositoryImpl
@@ -65,8 +66,11 @@ object AppModule {
      */
     @Provides
     @Singleton
-    fun provideFeedRepository(feedApi: FeedApi): FeedRepository {
-        return FeedRepositoryImpl(feedApi)
+    fun provideFeedRepository(
+        feedApi: FeedApi,
+        postDao: PostDao
+    ): FeedRepository {
+        return FeedRepositoryImpl(feedApi, postDao)
     }
 
     @Provides

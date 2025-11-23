@@ -1,5 +1,8 @@
 package com.bytedance.croissantapp.domain.repository
 
+import com.bytedance.croissantapp.data.local.dao.PostDao
+import com.bytedance.croissantapp.data.local.mapper.toDomain
+import com.bytedance.croissantapp.data.local.mapper.toEntityList
 import com.bytedance.croissantapp.data.model.toDomain
 import com.bytedance.croissantapp.data.remote.FeedApi
 import com.bytedance.croissantapp.domain.model.Post
@@ -9,12 +12,9 @@ import javax.inject.Inject
  * Feed数据仓库实现
  */
 class FeedRepositoryImpl @Inject constructor(
-    private val feedApi: FeedApi
+    private val feedApi: FeedApi,
+    private val postDao: PostDao
 ) : FeedRepository {
-
-    // 内存缓存：存储已加载的Post
-    // TODO 替换为Room数据库
-    private val postCache = mutableMapOf<String, Post>()
 
     override suspend fun getFeed(count: Int, acceptVideoClip: Boolean): Result<List<Post>> {
         return try {
@@ -48,10 +48,10 @@ class FeedRepositoryImpl @Inject constructor(
                     }
                 }
 
-                // 缓存到内存
-                // TODO 替换为数据库
-                for (post in posts) {
-                    postCache[post.postId] = post
+                if (posts.isNotEmpty()) {
+                    // 将 Post 转换为 PostEntity 后插入数据库
+                    postDao.insert(posts.toEntityList())
+                    println("FeedRepository: 成功转换并向数据库插入 ${posts.size} 条数据")
                 }
                 println("FeedRepository: 成功转换 ${posts.size} 条有效数据，已缓存")
                 Result.success(posts)
@@ -67,6 +67,7 @@ class FeedRepositoryImpl @Inject constructor(
     }
 
     override fun getCachedPost(postId: String): Post? {
-        return postCache[postId]
+        // 从数据库查询 PostEntity，然后转换为 Post
+        return postDao.findPostById(postId)?.toDomain()
     }
 }

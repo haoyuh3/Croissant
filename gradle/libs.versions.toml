@@ -39,6 +39,12 @@ navigationCompose = "2.8.5"
 # Paging
 paging = "3.3.5"
 
+# Room
+room = "2.6.1"
+
+# Lombok
+lombok = "1.18.30"
+
 # KSP
 ksp = "2.0.21-1.0.28"
 
@@ -111,6 +117,14 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 # Paging
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+
+# Room
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Lombok
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
 
 # SwipeRefreshLayout
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version = "1.1.0" }

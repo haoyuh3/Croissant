@@ -87,7 +87,7 @@ fun PostDto.toDomain(): Post {
         clips = clips?.map { it.toDomain() } ?: emptyList(),  // 处理 null
         music = music?.toDomain(),
         likeCount = 0,  // 默认值，实际应从API返回
-        isLiked = false  // 将在ViewModel中从MMKV读取
+        isLiked = false  // 从sharePreference读取的本地状态
     )
 }
 
@@ -96,7 +96,7 @@ fun AuthorDto.toDomain(): Author {
         userId = userId,
         nickname = nickname,
         avatar = avatar,
-        isFollowed = false  // 将在ViewModel中从MMKV读取
+        isFollowed = false  // 从sharePreference读取的本地状态
     )
 }
 

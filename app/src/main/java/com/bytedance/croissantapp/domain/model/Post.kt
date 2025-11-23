@@ -13,7 +13,7 @@ data class Post(
     val clips: List<Clip>,
     val music: Music?,
     val likeCount: Int = 0,
-    val isLiked: Boolean = false  // 从MMKV读取的本地状态
+    val isLiked: Boolean = false  // 从sharePreference读取的本地状态
 )
 
 /**
@@ -23,7 +23,7 @@ data class Author(
     val userId: String,
     val nickname: String,
     val avatar: String,
-    val isFollowed: Boolean = false  // 从MMKV读取的本地状态
+    val isFollowed: Boolean = false  // 从sharePreference读取的本地状态
 )
 
 /**
