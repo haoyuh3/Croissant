@@ -1,5 +1,6 @@
 package com.bytedance.croissantapp.presentation.detail.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -53,25 +54,24 @@ fun DetailTopBar(
                 Text(
                     text = post.author.nickname,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
                 )
-
-                // 关注按钮
-                Button(
+                Spacer(Modifier.weight(1f))
+                // 关注按钮 (空心样式)
+                OutlinedButton(
                     onClick = onFollowClick,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (post.author.isFollowed) {
-                            Color.LightGray
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        }
-                    ),
                     modifier = Modifier
                         .height(32.dp)
-                        .padding(horizontal = 4.dp)
+                        .padding(horizontal = 8.dp),
+                    // 1. 定义边框样式
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = if (post.author.isFollowed) Color.LightGray else Color.Red
+                    ),
+                    contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
                     Text(
                         text = if (post.author.isFollowed) "已关注" else "关注",
+                        color = if (post.author.isFollowed) Color.Gray else Color.Red,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

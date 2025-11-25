@@ -34,42 +34,45 @@ fun DetailContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .verticalScroll(rememberScrollState()) // 内容部分可以滑动
     ) {
-        // 横滑图片容器（已包含进度指示器）
+        // 横滑图片容器
         ImagePagerSection(clips = post.clips)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp) // 只应用水平 padding
+        ){
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // 标题
-        if (post.title.isNotEmpty()) {
-            Text(
-                text = post.title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-        }
-
-        // 正文（带话题词高亮）
-        HashtagText(
-            content = post.content,
-            hashtags = post.hashtags,
-            onHashtagClick = { hashtag ->
-                // TODO: 跳转到话题页
-                println("点击话题: $hashtag")
+            // 标题
+            if (post.title.isNotEmpty()) {
+                Text(
+                    text = post.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(12.dp))
             }
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            // 正文（带话题词高亮）
+            HashtagText(
+                content = post.content,
+                hashtags = post.hashtags,
+                onHashtagClick = { hashtag ->
+                    // TODO: 跳转到话题页
+                    println("点击话题: $hashtag")
+                }
+            )
 
-        // 发布时间
-        Text(
-            text = DateUtil.formatPublishDate(post.createTime),
-            style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
-        )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 发布时间
+            Text(
+                text = DateUtil.formatPublishDate(post.createTime),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
 
         // 底部留白，避免被BottomBar遮挡
         Spacer(modifier = Modifier.height(80.dp))

@@ -16,10 +16,10 @@ import com.bytedance.croissantapp.presentation.detail.components.DetailContent
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
+    modifier: Modifier = Modifier,
     postId: String,
     onNavigateBack: () -> Unit,
     viewModel: DetailViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
 ) {
     // 加载作品详情
     LaunchedEffect(postId) {
