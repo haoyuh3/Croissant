@@ -87,57 +87,58 @@ enum class BottomNavItem {
 - composable(route = Routes.HOME)/ Routes.Profile 配置导航路由
 
 ---
-![waterfall.png](E:\code_project\kotlinProject\Croissant\Progress\waterfall.png) ![detail.png](E:\code_project\kotlinProject\Croissant\Progress\detail.png)
+![waterfall.png](https://github.com/haoyuh3/CrossiantApp/blob/853ad6fdd77191c10f41175241337209a315b8f4/Progress/waterfall.png)
 ---
-
+![detail.png](https://github.com/haoyuh3/CrossiantApp/blob/853ad6fdd77191c10f41175241337209a315b8f4/Progress/detail.png)
+---
 ### 架构模式
 
 ```
 ┌─────────────────────────────────────┐
-│           Presentation Layer         │
-│  ┌────────────────────────────────┐ │
-│  │  HomeScreen (Composable)       │ │
-│  │  - LazyVerticalStaggeredGrid   │ │
-│  │  - PostCard Components         │ │
-│  └────────────────────────────────┘ │
-│               ↕                      │
-│  ┌────────────────────────────────┐ │
-│  │  HomeViewModel                 │ │
-│  │  - StateFlow<UiState>          │ │
-│  │  - StateFlow<List<Post>>       │ │
-│  └────────────────────────────────┘ │
+│           Presentation Layer         
+│  ┌────────────────────────────────┐ 
+│  │  HomeScreen (Composable)       │ 
+│  │  - LazyVerticalStaggeredGrid   │ 
+│  │  - PostCard Components         │ 
+│  └────────────────────────────────┘ 
+│               ↕                      
+│  ┌────────────────────────────────┐ 
+│  │  HomeViewModel                 │ 
+│  │  - StateFlow<UiState>          │ 
+│  │  - StateFlow<List<Post>>       │ 
+│  └────────────────────────────────┘ 
 └─────────────────────────────────────┘
                ↕
 ┌─────────────────────────────────────┐
-│           Domain Layer               │
-│  ┌────────────────────────────────┐ │
-│  │  GetFeedUseCase                │ │
-│  └────────────────────────────────┘ │
-│               ↕                      │
-│  ┌────────────────────────────────┐ │
-│  │  FeedRepository (Interface)    │ │
-│  └────────────────────────────────┘ │
-│               ↕                      │
-│  ┌────────────────────────────────┐ │
-│  │  Post (Domain Model)           │ │
-│  │  Author, Clip, Hashtag, Music  │ │
-│  └────────────────────────────────┘ │
+│           Domain Layer               
+│  ┌────────────────────────────────┐ 
+│  │  GetFeedUseCase                │ 
+│  └────────────────────────────────┘ 
+│               ↕                      
+│  ┌────────────────────────────────┐ 
+│  │  FeedRepository (Interface)    │ 
+│  └────────────────────────────────┘ 
+│               ↕                      
+│  ┌────────────────────────────────┐ 
+│  │  Post (Domain Model)           │ 
+│  │  Author, Clip, Hashtag, Music  │ 
+│  └────────────────────────────────┘ 
 └─────────────────────────────────────┘
                ↕
 ┌─────────────────────────────────────┐
-│           Data Layer                 │
-│  ┌────────────────────────────────┐ │
-│  │  FeedRepositoryImpl            │ │
-│  └────────────────────────────────┘ │
-│               ↕                      │
-│  ┌────────────────────────────────┐ │
-│  │  FeedApi (Retrofit)            │ │
-│  └────────────────────────────────┘ │
-│               ↕                      │
-│  ┌────────────────────────────────┐ │
-│  │  FeedResponse (DTO)            │ │
-│  │  PostDto, AuthorDto, ClipDto   │ │
-│  └────────────────────────────────┘ │
+│           Data Layer                 
+│  ┌────────────────────────────────┐ 
+│  │  FeedRepositoryImpl            │ 
+│  └────────────────────────────────┘ 
+│               ↕                      
+│  ┌────────────────────────────────┐ 
+│  │  FeedApi (Retrofit)            │ 
+│  └────────────────────────────────┘ 
+│               ↕                      
+│  ┌────────────────────────────────┐ 
+│  │  FeedResponse (DTO)            │ 
+│  │  PostDto, AuthorDto, ClipDto   │ 
+│  └────────────────────────────────┘ 
 └─────────────────────────────────────┘
                ↕
         Network / Local Storage
@@ -350,7 +351,7 @@ fun loadMore() {}
 
 ---
 
-![postCard.png](E:\code_project\kotlinProject\Croissant\Progress\PostCard.png)
+![postCard.png](https://github.com/haoyuh3/CrossiantApp/blob/d9b6ecf0be38c5d9e7b8cd02087976d2bc76e6b2/Progress/PostCard.png)
 
 ### 2.8 HomeScreen实现
 
