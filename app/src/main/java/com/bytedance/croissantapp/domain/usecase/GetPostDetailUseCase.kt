@@ -23,7 +23,7 @@ class GetPostDetailUseCase @Inject constructor(
 
         // 2. 未命中，请求API
         println("GetPostDetailUseCase: 缓存未命中，请求API - postId=$postId")
-        val result = feedRepository.getFeed(count = 20)
+        val result = feedRepository.getFeed(count = 20, acceptVideoClip = true)
 
         // 处理Result类型
         val posts = result.getOrElse { error ->

@@ -41,14 +41,13 @@ data class Clip(
      */
     val displayAspectRatio: Float
         get() {
-            val ratio = width.toFloat() / height
-            return if (ratio < 0.75f) {
-                0.75f
-
-            } else if (ratio > 1.33f) {
-                1.33f
-            } else {
-                ratio
+            return when (type) {
+                ClipType.VIDEO -> 9f / 16f  // 视频：竖屏比例
+                ClipType.IMAGE -> {
+                    // 图片比例计算逻辑
+                    val ratio = width.toFloat() / height.toFloat()
+                    ratio.coerceIn(3f / 4f, 4f / 3f)
+                }
             }
         }
 }

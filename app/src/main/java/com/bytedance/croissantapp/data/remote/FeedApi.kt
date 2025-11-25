@@ -16,7 +16,7 @@ interface FeedApi {
     @GET("feed/")
     suspend fun getFeed (
         @Query("count") count: Int,
-        @Query("accept_video_clip") acceptVideoClip: Boolean = false
+        @Query("accept_video_clip") acceptVideoClip: Boolean = true
     ): FeedResponse
 
 
