@@ -2,6 +2,7 @@ package com.bytedance.croissantapp.di
 
 import android.content.Context
 import androidx.room.Room
+import com.bytedance.croissantapp.data.local.dao.FollowedUserDao
 import com.bytedance.croissantapp.data.local.dao.PostDao
 import com.bytedance.croissantapp.data.local.database.AppDatabase
 import dagger.Module
@@ -25,6 +26,7 @@ object DataBaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME // 数据库文件名
         )
+            .fallbackToDestructiveMigration() // 开发阶段
             .build()
     }
 
@@ -37,5 +39,13 @@ object DataBaseModule {
     @Provides
     fun providePostDao(appDatabase: AppDatabase): PostDao {
         return appDatabase.postDao()
+    }
+
+    /**
+     * 提供 FollowedUserDao 的实例
+     */
+    @Provides
+    fun provideFollowedUserDao(appDatabase: AppDatabase): FollowedUserDao {
+        return appDatabase.followedUserDao()
     }
 }

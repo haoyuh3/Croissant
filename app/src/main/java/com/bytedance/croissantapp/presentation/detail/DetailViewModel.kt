@@ -3,6 +3,7 @@ package com.bytedance.croissantapp.presentation.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,6 +12,8 @@ import javax.inject.Inject
 import com.bytedance.croissantapp.domain.model.Post
 import com.bytedance.croissantapp.domain.usecase.GetPostDetailUseCase
 import com.bytedance.croissantapp.data.local.UserPreferencesRepository
+import com.bytedance.croissantapp.data.local.dao.FollowedUserDao
+import com.bytedance.croissantapp.data.local.entity.FollowedUserEntity
 
 /**
  * 详情页UI状态
@@ -24,7 +27,8 @@ sealed class DetailUiState {
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val getPostDetailUseCase: GetPostDetailUseCase,
-    private val preferencesRepository: UserPreferencesRepository
+    private val preferencesRepository: UserPreferencesRepository,
+    private val followedUserDao: FollowedUserDao
 ) : ViewModel() {
 
     // UI状态
@@ -93,6 +97,28 @@ class DetailViewModel @Inject constructor(
 
             // 更新本地存储
             preferencesRepository.setFollowStatus(author.userId, newFollowStatus)
+
+            // 在后台线程同步更新数据库
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    if (newFollowStatus) {
+                        // 关注：插入数据库
+                        val followedUser = FollowedUserEntity(
+                            userId = author.userId,
+                            nickname = author.nickname,
+                            avatar = author.avatar,
+                            bio = "",
+                            followedTime = System.currentTimeMillis()
+                        )
+                        followedUserDao.insertFollowedUser(followedUser)
+                    } else {
+                        // 取消关注：从数据库删除
+                        followedUserDao.deleteFollowedUserById(author.userId)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
 
             // 更新UI状态
             val updatedPost = post.copy(

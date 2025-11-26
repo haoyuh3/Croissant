@@ -2,4 +2,7 @@
 <resources>
 
     <style name="Theme.CroissantApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- AppCompat 主题，用于传统 Activity -->
+    <style name="Theme.CroissantApp.AppCompat" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>

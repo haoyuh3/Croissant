@@ -89,6 +89,22 @@ public class FollowListAdapter extends RecyclerView.Adapter<FollowListAdapter.Fo
             tvUsername.setText(user.getUsername());
             tvBio.setText(user.getBio());
 
+            // 加载头像
+            if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+                // 使用 Coil 加载网络图片
+                coil.ImageLoader imageLoader = new coil.ImageLoader.Builder(itemView.getContext()).build();
+                coil.request.ImageRequest request = new coil.request.ImageRequest.Builder(itemView.getContext())
+                        .data(user.getAvatarUrl())
+                        .target(ivAvatar)
+                        .placeholder(R.drawable.ic_launcher_foreground)
+                        .error(R.drawable.ic_launcher_foreground)
+                        .build();
+                imageLoader.enqueue(request);
+            } else {
+                // 如果没有头像URL，显示默认图片
+                ivAvatar.setImageResource(R.drawable.ic_launcher_foreground);
+            }
+
             // 根据关注状态更新按钮样式
             updateFollowButton(user.isFollowing());
 

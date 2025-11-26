@@ -1,6 +1,5 @@
 package com.bytedance.croissantapp.presentation.follow;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,19 +8,36 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bytedance.croissantapp.R;
+import com.bytedance.croissantapp.data.local.UserPreferencesRepository;
+import com.bytedance.croissantapp.data.local.dao.FollowedUserDao;
+import com.bytedance.croissantapp.data.local.entity.FollowedUserEntity;
 import com.bytedance.croissantapp.data.model.FollowUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * 关注列表页面
  */
-public class FollowListActivity extends Activity {
+@AndroidEntryPoint
+public class FollowListActivity extends AppCompatActivity {
+
+    @Inject
+    FollowedUserDao followedUserDao;
+
+    @Inject
+    UserPreferencesRepository preferencesRepository;
 
     private RecyclerView rvFollowList;
     private LinearLayout layoutEmpty;
@@ -30,6 +46,7 @@ public class FollowListActivity extends Activity {
 
     private FollowListAdapter adapter;
     private List<FollowUser> followUserList;
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,7 +56,13 @@ public class FollowListActivity extends Activity {
         initViews();
         initData();
         setupRecyclerView();
-        updateUI();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 每次页面恢复时重新加载数据，确保显示最新的关注列表
+        loadDataFromDatabase();
     }
 
     /**
@@ -57,19 +80,49 @@ public class FollowListActivity extends Activity {
 
     /**
      * 初始化数据
-     * 这里使用模拟数据，实际项目中应该从网络或数据库获取
      */
     private void initData() {
         followUserList = new ArrayList<>();
+    }
 
-        followUserList.add(new FollowUser("1", "小红", "热爱生活，热爱摄影", "", true));
-        followUserList.add(new FollowUser("2", "旅行家Tom", "走遍世界的每一个角落", "", true));
-        followUserList.add(new FollowUser("3", "美食达人", "探索城市中的美味佳肴", "", true));
-        followUserList.add(new FollowUser("4", "健身教练Mike", "专业健身指导，科学塑形", "", true));
-        followUserList.add(new FollowUser("5", "摄影师Anna", "用镜头记录生活的美好瞬间", "", true));
-        followUserList.add(new FollowUser("6", "时尚博主Lisa", "分享最新时尚潮流趋势", "", true));
-        followUserList.add(new FollowUser("7", "读书人老王", "每天一本好书推荐", "", true));
-        followUserList.add(new FollowUser("8", "音乐制作人", "原创音乐，分享音乐故事", "", true));
+    /**
+     * 从数据库加载关注的用户列表
+     */
+    private void loadDataFromDatabase() {
+        // 在后台线程查询数据库
+        executor.execute(() -> {
+            try {
+                // 从数据库查询所有关注的用户
+                List<FollowedUserEntity> entities = followedUserDao.getAllFollowedUsersOnce();
+
+                // 转换为FollowUser对象
+                List<FollowUser> users = new ArrayList<>();
+                for (FollowedUserEntity entity : entities) {
+                    users.add(new FollowUser(
+                        entity.getUserId(),
+                        entity.getNickname(),
+                        entity.getBio(),
+                        entity.getAvatar(),
+                        true  // 列表中的用户都是已关注状态
+                    ));
+                }
+
+                // 在主线程更新UI
+                runOnUiThread(() -> {
+                    followUserList.clear();
+                    followUserList.addAll(users);
+                    if (adapter != null) {
+                        adapter.notifyDataSetChanged();
+                    }
+                    updateUI();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() -> {
+                    Toast.makeText(FollowListActivity.this, "加载关注列表失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     /**
@@ -93,6 +146,31 @@ public class FollowListActivity extends Activity {
         // 切换关注状态
         boolean newFollowState = !user.isFollowing();
         user.setFollowing(newFollowState);
+
+        // 同步更新 SharedPreferences
+        preferencesRepository.setFollowStatus(user.getUserId(), newFollowState);
+
+        // 在后台线程更新数据库
+        executor.execute(() -> {
+            try {
+                if (newFollowState) {
+                    // 重新关注：插入数据库
+                    FollowedUserEntity entity = new FollowedUserEntity(
+                        user.getUserId(),
+                        user.getUsername(),
+                        user.getAvatarUrl(),
+                        user.getBio(),
+                        System.currentTimeMillis()
+                    );
+                    followedUserDao.insertFollowedUser(entity);
+                } else {
+                    // 取消关注：从数据库删除
+                    followedUserDao.deleteFollowedUserById(user.getUserId());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
         // 更新列表项
         adapter.updateUser(position);
