@@ -797,6 +797,7 @@ DetailScreen观察到状态变化，重组UI显示对应内容
 ---
 
 ### 3.2 DetailViewModel实现
+![detail.image](https://github.com/haoyuh3/CrossiantApp/blob/b428012a7e6a35b8993e9b32c2105aeb4c8a896e/Progress/DetailScreen.png)
 
 #### loadPostDetail方法逻辑
 
