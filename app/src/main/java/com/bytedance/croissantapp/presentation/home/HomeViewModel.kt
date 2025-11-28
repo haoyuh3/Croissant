@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.bytedance.croissantapp.data.local.UserPreferencesRepository
 import com.bytedance.croissantapp.domain.model.Post
 import com.bytedance.croissantapp.domain.usecase.GetFeedUseCase
+import com.bytedance.croissantapp.domain.usecase.GetFeedUseCaseCache
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +31,8 @@ sealed class FeedUiState {
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getFeedUseCase: GetFeedUseCase,
-    private val preferencesRepository: UserPreferencesRepository
+    private val preferencesRepository: UserPreferencesRepository,
+    private val getFeedUseCaseCache: GetFeedUseCaseCache
 ) : ViewModel() {
 
     // ==================== UI状态 ====================
@@ -49,6 +51,10 @@ class HomeViewModel @Inject constructor(
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
 
+    // 错误消息（用于显示Snackbar）
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
     // 初始化
     init {
         loadFeed()
@@ -64,26 +70,38 @@ class HomeViewModel @Inject constructor(
             _uiState.value = FeedUiState.InitLoading
             println("HomeViewModel: 开始加载Feed...")
 
-            try {
-                // 调用API获取数据
-                val posts = getFeedUseCase(count = 20)
-                println("HomeViewModel: 从API获取到 ${posts.size} 条数据")
+            val result = getFeedUseCase.invokeWithResult(count = 20)
+            result.fold(
+                onSuccess = { posts ->
+                    println("HomeViewModel: 从API获取到 ${posts.size} 条数据")
+                    val postsWithLocalState = fillWithLocalState(posts)
+                    _posts.value = postsWithLocalState
+                    _uiState.value = if (postsWithLocalState.isEmpty()) {
+                        println("HomeViewModel: API返回空数据，显示Empty状态")
+                        FeedUiState.Empty
+                    } else {
+                        println("HomeViewModel: 加载成功，共 ${postsWithLocalState.size} 条")
+                        FeedUiState.Success
+                    }
+                },
+                onFailure = { error ->
+                    println("HomeViewModel: 网络加载失败 - ${error.message}，尝试从缓存加载")
+                    // 网络失败时尝试从缓存加载
+                    val cachedPosts = getFeedUseCaseCache(count = 20)
+                    println("HomeViewModel: 从缓存获取到 ${cachedPosts.size} 条数据")
 
-                val postsWithLocalState = fillWithLocalState(posts)
-
-                _posts.value = postsWithLocalState
-                _uiState.value = if (postsWithLocalState.isEmpty()) {
-                    println("HomeViewModel: 数据为空，显示Empty状态")
-                    FeedUiState.Empty
-                } else {
-                    println("HomeViewModel: 加载成功，共 ${postsWithLocalState.size} 条")
-                    FeedUiState.Success
+                    if (cachedPosts.isNotEmpty()) {
+                        val postsWithLocalState = fillWithLocalState(cachedPosts)
+                        _posts.value = postsWithLocalState
+                        _uiState.value = FeedUiState.Success
+                        println("HomeViewModel: 使用缓存数据，共 ${postsWithLocalState.size} 条")
+                    } else {
+                        _posts.value = emptyList()
+                        _uiState.value = FeedUiState.Error("网络连接失败，且无缓存数据")
+                        println("HomeViewModel: 网络失败且无缓存数据")
+                    }
                 }
-            } catch (e: Exception) {
-                println("HomeViewModel: 加载失败 - ${e.message}")
-                e.printStackTrace()
-                _uiState.value = FeedUiState.Error(e.message ?: "未知错误")
-            }
+            )
         }
     }
 
@@ -91,25 +109,29 @@ class HomeViewModel @Inject constructor(
      * 下拉刷新
      */
     fun refresh() {
-        // viewModelScope.launch 用于在 Android ViewModel 中执行异步任务
         viewModelScope.launch {
             _isRefreshing.value = true
 
-            try {
-                val posts = getFeedUseCase(count = 20)
-                val postsWithLocalState = fillWithLocalState(posts)
-
-                _posts.value = postsWithLocalState
-                _uiState.value = if (postsWithLocalState.isEmpty()) {
-                    FeedUiState.Empty
-                } else {
-                    FeedUiState.Success
+            val result = getFeedUseCase.invokeWithResult(count = 20)
+            result.fold(
+                onSuccess = { posts ->
+                    println("HomeViewModel: 刷新成功，获取到 ${posts.size} 条数据")
+                    val postsWithLocalState = fillWithLocalState(posts)
+                    _posts.value = postsWithLocalState
+                    _uiState.value = if (postsWithLocalState.isEmpty()) {
+                        FeedUiState.Empty
+                    } else {
+                        FeedUiState.Success
+                    }
+                },
+                onFailure = { error ->
+                    println("HomeViewModel: 刷新失败 - ${error.message}")
+                    // 网络错误时提示用户，保持当前数据不变
+                    _errorMessage.value = "网络连接失败，请检查网络设置"
                 }
-            } catch (e: Exception) {
-                // 刷新失败时保持当前数据，不改变uiState
-            } finally {
-                _isRefreshing.value = false
-            }
+            )
+
+            _isRefreshing.value = false
         }
     }
 
@@ -122,21 +144,26 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoadingMore.value = true
 
-            try {
-                val newPosts = getFeedUseCase(count = 20)
-                // 加载share preference 点赞量关注信息
-                val postsWithLocalState = fillWithLocalState(newPosts)
+            val result = getFeedUseCase.invokeWithResult(count = 20)
+            result.fold(
+                onSuccess = { newPosts ->
+                    println("HomeViewModel: 加载更多成功，获取到 ${newPosts.size} 条数据")
+                    val postsWithLocalState = fillWithLocalState(newPosts)
 
-                // 防止追加重复数据（API可能每次返回相同内容）
-                val existingPostIds = _posts.value.map { it.postId }.toSet()
-                val uniqueNewPosts = postsWithLocalState.filter { it.postId !in existingPostIds }
+                    // 防止追加重复数据（API可能每次返回相同内容）
+                    val existingPostIds = _posts.value.map { it.postId }.toSet()
+                    val uniqueNewPosts = postsWithLocalState.filter { it.postId !in existingPostIds }
 
-                _posts.value += uniqueNewPosts
-            } catch (e: Exception) {
-                // 加载更多失败时忽略
-            } finally {
-                _isLoadingMore.value = false
-            }
+                    _posts.value += uniqueNewPosts
+                },
+                onFailure = { error ->
+                    println("HomeViewModel: 加载更多失败 - ${error.message}")
+                    // 网络错误时提示用户
+                    _errorMessage.value = "网络连接失败，请检查网络设置"
+                }
+            )
+
+            _isLoadingMore.value = false
         }
     }
 
@@ -175,6 +202,13 @@ class HomeViewModel @Inject constructor(
      */
     fun refreshLocalState() {
         _posts.value = fillWithLocalState(_posts.value)
+    }
+
+    /**
+     * 清除错误消息（Snackbar显示后调用）
+     */
+    fun clearErrorMessage() {
+        _errorMessage.value = null
     }
 
     // ==================== 私有方法 ====================

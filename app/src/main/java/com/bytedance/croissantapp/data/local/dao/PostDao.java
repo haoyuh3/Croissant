@@ -23,4 +23,7 @@ public interface PostDao {
 
     @Query("DELETE FROM posts")
     void deleteAll();
+
+    @Query("SELECT * FROM posts ORDER BY create_time DESC LIMIT :count")
+    List<PostEntity> getLatestPosts(int count);
 }

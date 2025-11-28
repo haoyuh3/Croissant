@@ -11,10 +11,22 @@ import javax.inject.Inject
 class GetFeedUseCase @Inject constructor(
     private val feedRepository: FeedRepository
 ) {
+    /**
+     * 获取Feed，网络失败时返回空列表
+     */
     suspend operator fun invoke(
         count: Int = 20,
     ): List<Post> {
         return feedRepository.getFeed(count)
             .getOrElse { emptyList() }
+    }
+
+    /**
+     * 获取Feed，返回Result以区分网络错误
+     */
+    suspend fun invokeWithResult(
+        count: Int = 20,
+    ): Result<List<Post>> {
+        return feedRepository.getFeed(count)
     }
 }

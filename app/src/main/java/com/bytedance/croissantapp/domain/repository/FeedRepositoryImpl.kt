@@ -76,4 +76,10 @@ class FeedRepositoryImpl @Inject constructor(
             postDao.findPostById(postId)?.toDomain()
         }
     }
+
+    override suspend fun getLatestCachedPosts(count: Int): List<Post> {
+        return withContext(Dispatchers.IO) {
+            postDao.getLatestPosts(count)?.map { it.toDomain() } ?: emptyList()
+        }
+    }
 }
