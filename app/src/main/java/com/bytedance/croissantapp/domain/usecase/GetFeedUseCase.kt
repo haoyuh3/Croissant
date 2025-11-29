@@ -16,16 +16,6 @@ class GetFeedUseCase @Inject constructor(
      */
     suspend operator fun invoke(
         count: Int = 20,
-    ): List<Post> {
-        return feedRepository.getFeed(count)
-            .getOrElse { emptyList() }
-    }
-
-    /**
-     * 获取Feed，返回Result以区分网络错误
-     */
-    suspend fun invokeWithResult(
-        count: Int = 20,
     ): Result<List<Post>> {
         return feedRepository.getFeed(count)
     }

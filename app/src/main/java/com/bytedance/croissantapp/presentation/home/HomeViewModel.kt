@@ -70,7 +70,7 @@ class HomeViewModel @Inject constructor(
             _uiState.value = FeedUiState.InitLoading
             println("HomeViewModel: 开始加载Feed...")
 
-            val result = getFeedUseCase.invokeWithResult(count = 20)
+            val result = getFeedUseCase()
             result.fold(
                 onSuccess = { posts ->
                     println("HomeViewModel: 从API获取到 ${posts.size} 条数据")
@@ -112,7 +112,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _isRefreshing.value = true
 
-            val result = getFeedUseCase.invokeWithResult(count = 20)
+            val result = getFeedUseCase()
             result.fold(
                 onSuccess = { posts ->
                     println("HomeViewModel: 刷新成功，获取到 ${posts.size} 条数据")
@@ -144,7 +144,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoadingMore.value = true
 
-            val result = getFeedUseCase.invokeWithResult(count = 20)
+            val result = getFeedUseCase()
             result.fold(
                 onSuccess = { newPosts ->
                     println("HomeViewModel: 加载更多成功，获取到 ${newPosts.size} 条数据")

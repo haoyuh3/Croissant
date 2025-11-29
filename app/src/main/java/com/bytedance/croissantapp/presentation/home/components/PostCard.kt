@@ -70,34 +70,37 @@ fun PostCard(
 
                         ClipType.VIDEO -> {
                             // 视频封面 + 播放按钮
-                            println("video url: ${coverClip.url}")
 //                            VideoPlayer(
 //                                videoUrl = coverClip.url,
 //                                autoPlay = false,  // 首页不自动播放
 //                                showControls = false,  // 不显示控制条
 //                                modifier = Modifier.fillMaxSize()
 //                            )
-                            AsyncImage(
-                                // TODO NEED Video Cover
-                                model = coverClip.url,
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-
-                            // 播放图标遮罩
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Black.copy(alpha = 0.3f)),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxSize() //
+                                    .background(Color.Black), // 添加黑色背景
+                                contentAlignment = Alignment.Center //
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = "播放视频",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(64.dp)
-                                )
+                                // 3. 将原来的Column直接放在这里
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.PlayArrow,
+                                        contentDescription = "播放视频",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(64.dp)
+                                    )
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    Text(
+                                        text = "视频播放功能开发中",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Gray
+                                    )
+                                }
                             }
                         }
                     }
