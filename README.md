@@ -433,13 +433,20 @@ val pullRefreshState = rememberPullRefreshState(
 ![followList.image](https://github.com/haoyuh3/CrossiantApp/blob/fe812653d798f470796456c9f0e442d5db2740e2/Progress/followList.png)
 ---
 #### 3.7 动画和页面跳转
+##### 3.7.1 视频滑动
+- 视频支持上下滑动 (但是没有调用API仅支持已在HomeScreen加载的视频)
 [视频滑动刷新.webm](https://github.com/user-attachments/assets/3dcb5c04-2ff5-4e8a-9dd2-9a8506ddcb6e)
-
-
+---
+##### 3.7.2 网络波动
+- 有网络刷新
 [网络](https://github.com/user-attachments/assets/9aed9c89-522a-45df-b603-874f17f681f6)
 
-
+-无网络刷新
 [无网络](https://github.com/user-attachments/assets/3aae2919-41cd-4058-95a6-a8757ff9bd31)
+--- 
+##### 3.7.3 主页面详情页切换和点赞关注按钮测试
+[主页面切换](https://github.com/user-attachments/assets/c0e6225f-f9c5-4d14-8eff-d37d7d7b4364)
+
 
 
 
