@@ -433,8 +433,15 @@ val pullRefreshState = rememberPullRefreshState(
 ![followList.image](https://github.com/haoyuh3/CrossiantApp/blob/fe812653d798f470796456c9f0e442d5db2740e2/Progress/followList.png)
 ---
 #### 3.7 动画和页面跳转
-![不同网络状态下刷新](E:\code_project\kotlinProject\Croissant\Progress\video\不同网络状态下刷新.webm)
-![视频滑动](E:\code_project\kotlinProject\Croissant\Progress\video\视频滑动刷新.webm)
+[视频滑动刷新.webm](https://github.com/user-attachments/assets/3dcb5c04-2ff5-4e8a-9dd2-9a8506ddcb6e)
+
+
+[网络](https://github.com/user-attachments/assets/9aed9c89-522a-45df-b603-874f17f681f6)
+
+
+[无网络](https://github.com/user-attachments/assets/3aae2919-41cd-4058-95a6-a8757ff9bd31)
+
+
 
 #### 3.8 性能优化技术
 
