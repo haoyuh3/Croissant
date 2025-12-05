@@ -1,23 +1,108 @@
-# CrossiantApp - 技术文档
+# Croissant App - 技术文档
 
-## 📋 项目概述
+## 📋 目录
 
-这是一个基于字节跳动训练营课题的**图文客户端APP**，模仿可颂APP的核心功能，提供UGC内容社区体验。
-
-### 业务背景
-- **产品定位**：UGC内容社区，满足用户经验决策、圈层交流需求
-- **产品形态**：双列图文视频混排，以图文体裁为主
-- **核心优势**：
-    - 双列布局：屏效比高，一屏展示多个作品，便于内容筛选
-    - 图文体裁：信息密度高、可控感强、创作门槛低
+- [项目概述](#项目概述)
+- [实现方案/框架介绍](#实现方案框架介绍)
+- [个人思考](#个人思考)
 
 ---
 
-## 🏗️ 技术架构
+## 项目概述
 
-### 架构模式
-采用 **MVVM** 架构模式：
+### 业务定位
 
+Croissant是一个基于字节跳动训练营课题的**UGC内容社区客户端应用**，模仿可颂APP的核心功能，为用户提供图文内容的浏览、互动和分享体验。
+
+**核心特点：**
+- **产品定位**：UGC内容社区，满足用户经验决策、圈层交流需求
+- **产品形态**：双列图文视频混排，以图文体裁为主
+- **技术栈**：(Kotlin + Java) + Jetpack Compose实现的现代化Android应用
+
+**竞争优势：**
+- 双列瀑布流布局：屏效比高，一屏展示多个作品，便于内容筛选
+- 图文体裁为主：信息密度高、可控感强、创作门槛低
+- 离线缓存支持：无网络环境下仍可浏览已缓存内容
+
+---
+
+## 实现方案/框架介绍
+
+### 功能完成度总览
+
+根据训练营课题要求，以下是各功能模块的实现情况：
+
+#### 基础功能完成度
+
+| 功能模块 | 子模块      | 完成状态 | 实现位置 | 备注 |
+|---------|----------|---------|----------|------|
+| **应用框架** | 底部导航栏    | ✅ 已完成 | `BottomNavigationBar.kt` | 支持"首页"和"我"切换 |
+| | 首页Tab    | ✅ 已完成 | `HomeTabItem.kt` | 默认"社区"Tab，其他Tab占位 |
+| **双列瀑布流** | 双列框架     | ✅ 已完成 | `HomeScreen.kt:153-195` | LazyVerticalStaggeredGrid实现 |
+| | 下拉刷新     | ✅ 已完成 | `HomeScreen.kt` | PullRefresh实现 |
+| | 上滑LoadMore | ✅ 已完成 | `HomeViewModel.kt` | 触底自动加载 |
+| | 首刷失败空态   | ✅ 已完成 | `HomeScreen.kt` | Error状态处理 |
+| | Loading提示 | ✅ 已完成 | `HomeScreen.kt` | Loading状态展示 |
+| | 作品卡片     | ✅ 已完成 | `PostCard.kt` | 封面+标题+作者+点赞 |
+| | 封面裁切规则   | ✅ 已完成 | `PostCard.kt` | 3:4 ~ 4:3宽高比限制 |
+| | 标题展示     | ✅ 已完成 | `PostCard.kt` | 最长2行，超出截断 |
+| | 点赞交互     | ✅ 已完成 | `PostCard.kt` | 本地持久化存储 |
+| **详情页** | 顶部作者区    | ✅ 已完成 | `DetailTopBar.kt` | 返回+作者信息+关注按钮 |
+| | 关注功能     | ✅ 已完成 | `DetailViewModel.kt:97-123` | SP+Room双写 |
+| | 底部交互区    | ✅ 已完成 | `DetailBottomBar.kt` | 评论框+点赞+评论+收藏+分享 |
+| | 点赞交互     | ✅ 已完成 | `DetailViewModel.kt:76-95` | SP持久化 |
+| | 分享交互     | ⚠️ 部分完成 | `DetailBottomBar.kt` | 仅打印日志 |
+| | 横滑容器     | ✅ 已完成 | `DetailContent.kt:86-134` | HorizontalPager实现 |
+| | 容器宽高比    | ✅ 已完成 | `DetailContent.kt:99` | 使用首图比例，3:4~16:9限制 |
+| | 图片切换     | ✅ 已完成 | `DetailContent.kt` | 支持手动横滑 |
+| | 加载态/失败态  | ✅ 已完成 | `DetailContent.kt:112-126` | SubcomposeAsyncImage实现 |
+| | 进度条      | ✅ 已完成 | `DetailContent.kt:140-149` | 条状进度，跟随滑动 |
+| | 标题区      | ✅ 已完成 | `DetailContent.kt:48-54` | 完整展示不截断 |
+| | 正文区      | ✅ 已完成 | `DetailContent.kt:58-64` | 完整展示不截断 |
+| | 话题词高亮    | ✅ 已完成 | `DetailContent.kt:154-217` | ClickableText实现 |
+| | 话题词点击    | ✅ 已完成 | `HashtagScreen.kt` | 跳转话题页面 |
+| | 发布日期     | ✅ 已完成 | `DetailContent.kt:69-73` + `DateUtil.kt` | 相对时间格式化 |
+| **个人主页** | 个人信息展示   | ✅ 已完成 | `ProfileScreen.kt` | 头像+昵称+简介 |
+| | 统计数据     | ✅ 已完成 | `ProfileScreen.kt:92-123` | 关注/粉丝/获赞（占位数据） |
+| | 头像编辑     | ✅ 已完成 | `ProfileScreen.kt:150-169` | 图片选择器 |
+| | 昵称/简介编辑  | ✅ 已完成 | `ProfileScreen.kt:254-333` | Dialog编辑 |
+
+#### 进阶功能完成度
+
+| 功能模块 | 子模块 | 完成状态 | 实现位置 | 备注 |
+|---------|--------|---------|----------|------|
+| **页面转场** | 转场动画 | ❌ 未实现 | - | 点击进场/退场、侧滑跟手 |
+| **详情页** | 背景音乐 | ❌ 未实现 | - | 静音按钮、播控逻辑、状态记忆 |
+| | 自动轮播 | ❌ 未实现 | - | 图片自动切换 |
+| | 视频片段 | ✅ 已完成 | `VideoPlayer.kt` | ExoPlayer实现 |
+
+#### 自由探索完成度
+
+| 思考方向 | 完成状态 | 实现位置 | 说明                       |
+|---------|---------|----------|--------------------------|
+| **体验优化** | ✅ 已完成 | 多处优化 | -                        |
+| 离线/弱网体验 | ✅ 已完成 | `FeedRepositoryImpl.kt` | 离线优先策略，Room缓存，LoadMore报错 |
+| 图片加载优化 | ✅ 已完成 | 全局 | Coil异步加载+缓存              |
+| 列表滑动优化 | ✅ 已完成 | `HomeScreen.kt` | LazyList Key优化           |
+| 视频播放支持 | ✅ 已完成 | `VideoPlayer.kt` | Media3 ExoPlayer         |
+| 话题页面 | ✅ 已完成 | `HashtagScreen.kt` | 话题词点击跳转                  |
+
+#### 功能完成统计
+
+| 类别 | 总计 | 已完成 | 未完成 | 部分完成 | 完成率 |
+|------|------|--------|--------|----------|--------|
+| **基础功能** | 30 | 28 | 1 | 1 | 93% |
+| **进阶功能** | 4 | 1 | 3 | 0 | 25% |
+| **自由探索** | 6 | 6 | 0 | 0 | 100% |
+| **总计** | 40 | 35 | 4 | 1 | 87.5% |
+
+---
+
+### 1. 整体架构设计
+
+#### 1.1 架构模式：MVVM + Clean Architecture
+
+本项目采用**MVVM（Model-View-ViewModel）**架构模式，实现高内聚、低耦合的代码结构。
 ```
 app/src/main/java/com/bytedance/crossiantapp/
 ├── data/              # 数据层
@@ -36,275 +121,201 @@ app/src/main/java/com/bytedance/crossiantapp/
 └── util/             # 工具类
 ```
 
-## 🎯 功能模块详解
-
-### 1. 应用框架
-
-#### 1.1 底部导航栏
-- **Tab列表**（从左到右）：首页、朋友、相机(+)、消息、我
-- **实现要求**：
-    - 只需支持"首页"和"我"的点击
-    - 启动后默认在"首页"
-    - 使用 `NavigationBarItem`
-
-```kotlin
-// presentation/components/BottomNavigationBar.kt
-// testUI/NavigationBarTest
-// 实现BottomNavItem
-enum class BottomNavItem {
-    HOME,      // 首页 
-    FRIENDS,   // 朋友 
-    CAMERA,    // 相机 
-    MESSAGE,   // 消息 
-    PROFILE    // 我 
-}
 ```
-- NavigationBar 遍历 BottomNavItem
-- 使用NavigationBarItem库 配置图标文字，点击事件，颜色
+┌─────────────────────────────────────────────────────────-┐
+│                    Presentation Layer                    |
+│  (UI/ViewModel - Jetpack Compose + StateFlow)            |
+│  ┌───────────┐  ┌──────────┐  ┌──────────────┐           |
+│  │HomeScreen │  │DetailScn │  │ProfileScreen │           |
+│  └─────┬─────┘  └────┬─────┘  └──────┬───────┘           |
+│        │             │                │                  │
+│  ┌─────▼─────┐  ┌───▼──────┐  ┌─────▼────────┐           |
+│  │HomeVM     │  │DetailVM  │  │ProfileVM     │           |
+│  └─────┬─────┘  └────┬─────┘  └──────┬───────┘           |
+└────────┼─────────────┼────────────────┼─────────────────-|
+         │             │                │
+┌────────▼─────────────▼────────────────▼─────────────────┐
+│                     Domain Layer                        | 
+│  (Business Logic - Pure Kotlin)                         |
+│  ┌──────────────┐  ┌────────────────────────┐           │
+│  │  UseCases    │  │  Repository Interface  │           │
+│  ├──────────────┤  ├────────────────────────┤           │
+│  │GetFeedUseCase│  │  FeedRepository        │           │
+│  │GetDetailUse..│  │  - getFeed()           │           │
+│  └──────┬───────┘  └────────┬───────────────┘           │
+└─────────┼──────────────────┼──────────────────────────--|
+          │                  │
+┌─────────▼──────────────────▼──────────────────────────┐
+│                     Data Layer                        │
+│  (Data Sources - Network + Local Storage)             │
+│  ┌─────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│  │FeedRepoImpl │  │  FeedApi     │  │ PostDao      │  │
+│  └─────┬───────┘  │  (Retrofit)  │  │ (Room DB)    │  │
+│        │          └──────┬───────┘  └──────┬───────┘  │
+│        │                 │                  │         │
+│  ┌─────▼─────────────────▼──────────────────▼───────┐ │
+│  │  Data Mapping: DTO ↔ Domain Model ↔ Entity       │ │
+│  └──────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────┘
+```
 
-#### 1.2 首页Tab
+**各层职责：**
+
+| 层级 | 职责 | 关键组件 | 依赖关系 |
+|------|------|----------|----------|
+| **Presentation** | UI渲染、用户交互、状态管理 | Composable函数、ViewModel、StateFlow | 依赖Domain层 |
+| **Domain** | 业务逻辑、数据协调、用例编排 | UseCase、Repository接口、领域模型 |
+| **Data** | 数据获取、持久化、网络请求 | API、DAO、Repository实现、Mapper | 实现Domain接口 |
+---
+
+#### 1.2 核心技术栈
+
+| 技术领域 | 框架/库 | 版本 | 用途说明                |
+|---------|---------|------|---------------------|
+| **构建工具** | Gradle | 8.13.1 | 项目构建和依赖管理           |
+| **编程语言** | Kotlin | 2.0.21 | 主语言，Kotlin, Java实现  |
+| **UI框架** | Jetpack Compose | 2024.09.00 | 声明式UI，Material3设计   |
+| **依赖注入** | Hilt | 2.48 | 依赖管理和对象提供           |
+| **网络请求** | Retrofit | 2.11.0 | RESTful API调用       |
+| **JSON解析** | Gson | 2.10.1 | 数据序列化/反序列化          |
+| **本地数据库** | Room | 2.6.1 | SQLite抽象层，离线缓存      |
+| **图片加载** | Coil | 2.5.0 | Compose专用图片加载库      |
+| **异步编程** | Coroutines | 1.7.3 | 协程处理异步操作            |
+| **生命周期** | Lifecycle | 2.8.7 | ViewModel、LiveData等 |
+| **导航** | Navigation Compose | 2.8.5 | 单Activity多屏幕导航      |
+| **媒体播放** | Media3 (ExoPlayer) | 1.2.0 | 视频播放支持              |
+
+---
+
+### 2. 数据流架构
+
+#### 2.1 单向数据流（Unidirectional Data Flow）
+
+本项目严格遵循**单向数据流**原则，确保数据流动的可预测性和可追溯性：
+
+```
+┌───────────────────────────────────────────────────────┐
+│                    USER INTERACTION                   
+│         (点击、滑动、输入等用户操作)                       
+└───────────────────┬───────────────────────────────────┘
+                    │
+                    ▼
+┌───────────────────────────────────────────────────────┐
+│                   VIEW (Composable)                   
+│- viewModel.loadFeed()                                 
+│- viewModel.toggleLike(postId)                         
+└───────────────────┬───────────────────────────────────┘
+                    │
+                    ▼
+┌───────────────────────────────────────────────────────┐
+│                      VIEWMODEL                        │
+│   - 调用UseCase执行业务逻辑                              
+│   - 更新MutableStateFlow                               
+│   - _uiState.value = newState                         │
+└───────────────────┬───────────────────────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────────────────|
+│                 USE CASE                         
+│- 协调Repository获取数据 业务处理                     
+└───────────────────┬──────────────────────────────|
+                    │
+                    ▼
+┌───────────────────────────────────────────────────────┐
+│                      REPOSITORY                       
+│- 决策数据源（Network优先 → Cache降级）                    
+│- 数据转换（DTO → Domain Model）                         
+└───────────────────┬───────────────────────────────────┘
+                    │
+        ┌───────────┴───────────┐
+        ▼                       ▼
+┌──────────────┐        ┌──────────────┐
+│   NETWORK    │        │ LOCAL CACHE  │
+│   (Retrofit) │        │ (Room + SP)  │
+└──────┬───────┘        └──────┬───────┘
+       │                       │
+       └───────────┬───────────┘
+                   ▼
+┌───────────────────────────────────────────────────────┐
+│                   DATA MAPPING                        │
+│   - PostDto → Post (Domain Model)                     │
+│   - Post → PostEntity (Database Entity)               │
+└───────────────────┬───────────────────────────────────┘
+                    │
+                    ▼
+┌───────────────────────────────────────────────────────┐
+│               COMPOSE RECOMPOSITION                   
+│   - collectAsState()监听StateFlow                      
+│   - 状态变化触发UI重组                                   
+│   - 自动更新界面显示                                     
+└───────────────────────────────────────────────────────┘
+```
+---
+
+#### 2.2 数据加载
+本地状态填充逻辑：使用share preference填充点赞关注数据
+HomeScreen和DetailScreen 直接传递Post对象渲染UI
+本应用实现了基础的离线优先策略,确保在无网络环境下仍能提供基本功能：
+
+**缓存策略：**
+HomeViewModel 初次加载时将帖子存入数据库。 当无网络打开时优先从数据库中获取帖子。
+
+| 数据类型 | 主存储 | 辅助存储 | 同步策略 |
+|---------|--------|----------|----------|
+| **Feed列表** | Room Database | - | 每次API成功后替换 |
+| **点赞状态** | SharedPreferences | - | 用户操作立即写入 |
+| **关注状态** | SharedPreferences | Room (FollowedUser表) | SP立即写入，Room异步同步 |
+| **点赞数** | SharedPreferences | - | 本地计算维护 |
+
+#### 2.3 数据层功能
+
+| 功能项 | 技术要点                        |
+|--------|-----------------------------|
+| **Room数据库** | posts表 + followed_users表    |
+| **SharedPreferences** | 点赞/关注状态 + 用户资料              |
+| **DTO映射** | PostDto ↔ Post ↔ PostEntity |
+
+PostDto: 序列化Api调用结果 - FeedResponse.kt
+Post: 领域模型 - Post.kt
+PostEntity: 数据库实体 - PostEntity.kt
+
+---
+
+### 3. UI架构设计
+
+#### Jetpack Compose
+
+使用**Jetpack Compose**构建UI，摒弃传统XML布局：
+#### UI组件库
+| 组件名                     | 功能描述              | 复用场景 | 文件位置 |
+|-------------------------|-------------------|----------|----------|
+| **PostCard**            | 帖子卡片（封面+标题+作者+点赞） | 首页Feed流 | `PostCard.kt` |
+| **BottomNavigationBar** | 底部导航栏（5个Tab）      | MainActivity | `BottomNavigationBar.kt` |
+| **HomeTabRow**          | 顶部Tab栏（5个Tab）     | 首页 | `HomeTabItem.kt` |
+| **DetailTopBar**        | 详情页顶栏（返回+作者+关注）   | 详情页 | `DetailTopBar.kt` |
+| **DetailContent**       | 详情页内容             | 详情页 | `DetailContent.kt` |
+| **DetailBottomBar**     | 详情页底栏（评论框+操作按钮）   | 详情页 | `DetailBottomBar.kt` |
+| **VideoPlayer**         | 视频播放器组件           | 详情页、Feed流 | `VideoPlayer.kt` |
+|**HomeScreen**           | 首页主界面               | MainActivity | `HomeScreen.kt` |
+|**DetailScreen**         | 详情页主界面               | MainActivity | `DetailScreen.kt` |
+|**ProfileScreen**        | 个人中心               | MainActivity | `ProfileScreen.kt` |
+---
+
+#### 3.1 MainActivity
+| 功能项                           | 技术要点         | 文件位置                     |
+|-------------------------------|--------------|--------------------------|
+| **bottomBar**                 | 底部导航栏（5个Tab） | `BottomNavigationBar.kt` |
+| **NavGraph**                  | 根据底部路由渲染UI画面 | `NavGraph.kt`            |
+---
+#### 3.2 首页Tab
 - **Tab列表**（从左到右）：北京、团购、关注、社区、推荐
 - **实现要求**：
     - 默认位于"社区"
     - 其他Tab无需支持点击
 - Tab Row + 内容区域
 - 实现HomeTabRow
-
-#### 1.3 个人首页
-- **个人** 头像，关注，粉丝，喜欢
-- **实现要求**：
-    - 使用composable函数构建UI
-    - **Column** 是一个垂直方向的线性布局 包括(ICON + TXT + ROW)
-    - **Row** 是一个水平方向的线性布局 包括(关注，粉丝，喜欢)
-
-#### 1.4 导航系统配置
-
-- 理解Navigation Compose
-  **Navigation Compose** 是Jetpack Compose的导航库：
-- 使用rememberNavController() 保持navigator controller
-- 实现NavGraph (导航页面)
-- 实现NavHost (页面容器)
-- composable(route = Routes.HOME)/ Routes.Profile 配置导航路由
-
 ---
-![waterfall.png](https://github.com/haoyuh3/CrossiantApp/blob/853ad6fdd77191c10f41175241337209a315b8f4/Progress/waterfall.png)
----
-![detail.png](https://github.com/haoyuh3/CrossiantApp/blob/853ad6fdd77191c10f41175241337209a315b8f4/Progress/detail.png)
----
-
-## 核心实现
-
-### 2.1 Domain层模型定义
-
-**文件**: `domain/model/Post.kt`
-
-```kotlin
-
-/**
- * 作品（帖子）领域模型
- */
-data class Post(
-    val postId: String,
-    val title: String,
-    val content: String,
-    val hashtags: List<Hashtag>,
-    val createTime: Long,
-    val author: Author,
-    val clips: List<Clip>,
-    val music: Music?,
-    val likeCount: Int = 0,
-    val isLiked: Boolean = false
-)
-
-```
-
-### 2.2 Domain层DTO定义
-
-**文件**: `data/model/FeedResponse.kt`
-
-```kotlin
-/**
- * Feed接口响应
- */
-data class FeedResponse(
-    @SerializedName("status_code")
-    val statusCode: Int,
-
-    @SerializedName("has_more")
-    val hasMore: Int,
-
-    @SerializedName("post_list")
-    val postList: List<PostDto>?
-)
-
-// ==================== Mapper ====================
-
-/**
- * DTO → Domain Model 映射
- */
-fun PostDto.toDomain(): Post {
-}
-
-```
-
-### 2.3 网络层API定义
-
-**文件**: `data/remote/FeedApi.kt`
-
-```kotlin
-/**
- * Feed相关API接口
- */
-interface FeedApi {
-    /**
-     * 获取Feed流
-     * @param count 请求作品数量
-     * @param acceptVideoClip 是否支持下发视频片段（进阶功能）
-     */
-    @GET("feed/")
-    suspend fun getFeed(
-        @Query("count") count: Int,
-        @Query("accept_video_clip") acceptVideoClip: Boolean = false
-    ): FeedResponse
-}
-```
-
-### 2.4 Repository实现
--- 用于调用 api同时将接口数据类型 转化成domain数据类型
-
-**接口**: `domain/repository/FeedRepository.kt`
-
-```kotlin
-/**
- * Feed数据仓库接口
- */
-interface FeedRepository {
-    suspend fun getFeed(count: Int, acceptVideoClip: Boolean = false): Result<List<Post>>
-}
-```
-
-**实现**: `data/repository/FeedRepositoryImpl.kt`
-
-```kotlin
-/**
- * Feed数据仓库实现 调用api接口同时将接口数据类型 转化成domain数据类型
- */
-```
-
-### 2.5本地存储管理
-
-**文件**:
-
-```kotlin
-/**
- * 用户偏好设置管理（share preference）- 点赞关注
- * api调用后使用 Room 存储  访问详情页时取出
- */
-```
-
-### 2.6 HomeViewModel实现
-
-**文件**: `presentation/home/HomeViewModel.kt`
-
-#### 架构职责
-HomeViewModel是MVVM架构中的ViewModel层，负责：
-- **管理UI状态和数据**：通过StateFlow持有UI状态和帖子列表
-- **处理业务逻辑**：协调UseCase获取数据，填充本地状态
-- **响应用户交互**：处理点赞、刷新、加载更多等操作
-- **生命周期感知**：在配置变更（如屏幕旋转）时保持数据
-
-#### 状态管理
-
-**1. UI状态定义**
-```kotlin
-sealed class FeedUiState {
-    object InitLoading : FeedUiState()      // 首次加载中
-    object Success : FeedUiState()          // 加载成功
-    object Empty : FeedUiState()            // 无数据
-    data class Error(val message: String) : FeedUiState()  // 加载失败
-}
-```
-
-> **设计模式**：使用 `MutableStateFlow` (内部可变) 和 `StateFlow` (外部只读) 分离，确保**单向数据流**
-
-#### 核心功能实现
-
-**1. 首屏加载** (presentation/home/HomeViewModel.kt:62-88)
-**流程**：
-1. 设置加载状态 `InitLoading`
-2. 调用 `GetFeedUseCase` 获取20条数据
-3. 使用 `fillWithLocalState()` 填充本地状态（点赞、关注）
-4. 更新 `_posts` 和 `_uiState`
-5. 根据数据是否为空设置 `Empty` 或 `Success` 状态
-
-**2. 下拉刷新** (presentation/home/HomeViewModel.kt:93-114)
-```kotlin
-fun refresh() {
-    viewModelScope.launch {
-        _isRefreshing.value = true
-        try {
-            val posts = getFeedUseCase(count = 20)
-            val postsWithLocalState = fillWithLocalState(posts)
-            _posts.value = postsWithLocalState  // 完全替换数据
-            _uiState.value = if (postsWithLocalState.isEmpty()) {
-                FeedUiState.Empty
-            } else {
-                FeedUiState.Success
-            }
-        } catch (e: Exception) {
-            // 刷新失败保持当前数据
-        } finally {
-            _isRefreshing.value = false
-        }
-    }
-}
-```
-
-**特点**：
-- 使用独立的 `isRefreshing` 状态控制下拉刷新指示器
-- 失败时保持现有数据不变（用户友好）
-- **完全替换**列表数据
-
-**3. 上滑加载更多** (presentation/home/HomeViewModel.kt)
-```kotlin
-fun loadMore() {}
-```
-
-**特点**：
-- 防止重复加载（通过标志位）
-- 去重处理（防止API返回重复数据）
-- **追加数据**而非替换
-
-**4. 点赞交互** (presentation/home/HomeViewModel.kt:148-168)
-**流程**：
-1. 找到目标帖子
-2. 切换点赞状态
-3. 更新点赞数（+1/-1，最小为0）
-4. **持久化**到 SharedPreferences
-5. 更新列表状态
-
-#### 本地状态同步
-
-**用途**：从 SharedPreferences 读取用户的点赞、关注状态，填充到Post对象中
-**用途**：从详情页返回时，同步最新的本地状态（用户可能在详情页点赞/关注）
-
-### 2.7 PostCard组件实现
-- **文件**: `presentation/home/components/PostCard.kt`
-- 使用card库
-- 1. 封面图片/视频
-- 2. 标题/内容区域
-- 3. 底栏：作者信息 + 点赞按钮
-
----
-
-![postCard.png](https://github.com/haoyuh3/CrossiantApp/blob/d9b6ecf0be38c5d9e7b8cd02087976d2bc76e6b2/Progress/PostCard.png)
-
-### 2.8 HomeScreen实现
-
-**文件**: `presentation/home/HomeScreen.kt`
-
-#### 整体结构
-HomeScreen是首页的UI层，采用Jetpack Compose实现，结构如下：
+#### 3.3 家页面
 **UI层级**：
 ```
 Column
@@ -313,204 +324,76 @@ Column
 └── Box (Tab内容区域)
     └── CommunityTabContent (社区Tab - 瀑布流)
 ```
+| 功能项    | 技术要点 | 文件位置 |
+|--------|----------|-------|
+| **HomeTabRow** | 顶部Tab栏（5个Tab）| `HomeTabItem.kt` |
+| **CommunityTabContent** | 社区Tab内容（默认Tab） | `HomeScreen.kt` |
+| **lazyVerticalStaggeredGrid** | 双列瀑布流 | `HomeScreen.kt` |
+| **PostCard** | 帖子卡片（封面+标题+作者+点赞） | `PostCard.kt` |
 
-#### CommunityTabContent实现
 
-**1. 状态订阅** (presentation/home/HomeScreen.kt:114-117)
-```kotlin
-@Composable
-private fun CommunityTabContent() {}
-```
-
-> **响应式设计**：使用 `collectAsState()` 将 `StateFlow` 转换为 Compose State，**自动触发UI重组**
-
-**2. 下拉刷新配置** (presentation/home/HomeScreen.kt)
-```kotlin
-val pullRefreshState = rememberPullRefreshState() // 检测用户手势
-```
-
-**3. UI状态渲染** (presentation/home/HomeScreen.kt:142-214)
-
-使用 `when` 表达式根据 `uiState` 渲染不同UI：
-
-**状态流转**：
-```
-InitLoading → Success / Empty / Error
-     ↑            ↓
-     └────────────┘
-       (重试加载)
-```
+#### PostCard组件实现
+- **文件**: `presentation/home/components/PostCard.kt`
+- 使用card库
+- 1. 封面图片/视频
+- 2. 标题/内容区域
+- 3. 底栏：作者信息 + 点赞按钮
+---
+![postCard.png](https://github.com/haoyuh3/CrossiantApp/blob/d9b6ecf0be38c5d9e7b8cd02087976d2bc76e6b2/Progress/PostCard.png)
+---
 
 #### 双列瀑布流实现
 
-**4. LazyVerticalStaggeredGrid配置** (presentation/home/HomeScreen.kt:153-195)
+**LazyVerticalStaggeredGrid配置** (presentation/home/HomeScreen.kt:153-195)
+- 使用LazyVerticalStaggeredGrid组件
+---
+#### VideoPlayer实现
+- 使用ExoPlayer组件
+- 自动创建与释放: 使用 remember 来创建和保留 ExoPlayer 实例，确保在 videoUrl 变化时重新创建播放器，
+- Composable 离开屏幕时调用 exoPlayer.release()，有效地防止了内存泄漏
+- 加载状态: 在视频缓冲（Player.STATE_BUFFERING）时，会显示一个带半透明黑色背景的 CircularProgressIndicator
+- 错误处理: 当播放器进入空闲状态时，会显示一个黑屏和“视频加载失败”的文本提示，提供了清晰的错误反馈
+  ![VideoPlayer.png](https://github.com/haoyuh3/CrossiantApp/blob/83cb9633a8aba968dd2914b395e2e9c2981a524d/Progress/VideoPlayer.png)
+---
+
+#### HomeViewModel
+**1. 首屏加载**
+**流程**：
+1. 设置加载状态 `InitLoading`
+2. 调用 `GetFeedUseCase` 获取20条数据
+3. 使用 `fillWithLocalState()` 填充本地状态（点赞、关注）
+4. 更新 `_posts` 和 `_uiState`
+5. 根据数据是否为空设置 `Empty` 或 `Success` 状态
+
+**2. PullRefresh 功能实现：** (presentation/home/HomeViewModel.kt:93-114)
 ```kotlin
-LazyVerticalStaggeredGrid(
-    columns = StaggeredGridCells.Fixed(2),  // 固定2列
-    horizontalArrangement = Arrangement.spacedBy(8.dp),  // 列间距
-    verticalItemSpacing = 8.dp,  // 行间距
-    contentPadding = PaddingValues(16.dp),  // 内边距
-    modifier = Modifier.fillMaxSize()
-) {
-    // 作品卡片列表
-}
+ // 下拉刷新状态：连接手势和U
+val pullRefreshState = rememberPullRefreshState(
+    refreshing = isRefreshing,
+    onRefresh = { viewModel.refresh() }
+)
 ```
-
-**关键点**：
-- `StaggeredGridCells.Fixed(2)`: 固定2列布局，实现瀑布流效果
-- `key = { it.postId }`: 为每个item提供稳定的唯一key，**优化重组性能**
-- `LaunchedEffect(Unit)`: 当加载更多触发器出现在屏幕上时，自动调用 `loadMore()`
-- `StaggeredGridItemSpan.FullLine`: 加载更多指示器占据整行
-
-
-
-#### 辅助UI组件
-
-**空态页面** (presentation/home/HomeScreen.kt:228-249)
-**错误态页面** (presentation/home/HomeScreen.kt:254-285)
+- HomeScreen捕捉手势变化，异步改变状态
+- HomeViewModel执行刷新逻辑
+---
+**3. LoadMore 功能实现：** (presentation/home/HomeViewModel.kt)
+- 双列瀑布流下方放置一个加载更多组件。当compose重组加载更多组件，UI状态更新
+- HomeViewModel调用loadMore逻辑
 
 ---
-## 3. 详情页功能实现
+#### 3.4 帖子详情模块
 
-### 3.1 DetailScreen实现
-
-#### 导航流程
-DetailScreen通过Jetpack Navigation组件实现页面导航，整体流程如下：
-
-**导航路由定义**
-- 使用带参数的路由模板 `detail/{postId}` 接收动态的帖子ID
-
-**从HomeScreen触发导航**
-- 用户点击帖子卡片组件PostCard时触发onClick回调
-- 回调函数调用 `onNavigateToDetail(post.postId)` 传递帖子ID
-- 该回调函数在NavGraph中定义为 `navController.navigate(Routes.detail(postId))`
-- Navigation组件根据路由字符串跳转到DetailScreen，并将postId作为参数传递
-
-**DetailScreen参数接收**
-- NavGraph的composable块从backStackEntry中提取postId参数
-- 将postId传递给DetailScreen composable函数
-
-**返回导航处理**
-- DetailScreen提供onNavigateBack回调函数
-- 返回前通过savedStateHandle设置刷新标记 `refresh_from_detail = true`
-- 调用 `navController.navigateUp()` 执行返回操作
-- HomeScreen监听该标记实现数据刷新（从详情页返回时重新加载本地状态）
-
-#### 页面结构
-DetailScreen采用Scaffold布局模式，将页面分为三个核心区域：
-
-**顶部栏 (TopBar)**
-- 成功加载状态显示DetailTopBar组件，包含作者信息和关注按钮
-- 加载中或错误状态显示简化版TopAppBar，仅包含返回按钮和标题
-- TopBar接收Post对象、返回回调和关注回调三个参数
-
-**底部栏 (BottomBar)**
-- 仅在成功加载状态显示DetailBottomBar组件
-- 包含评论输入框、点赞按钮、评论/收藏/分享按钮
-- 接收Post对象和点赞回调参数
-
-**内容区域 (Content)**
-- 根据uiState的三种状态显示不同UI：
-  - **Loading状态**：屏幕中央显示CircularProgressIndicator加载动画
-  - **Success状态**：显示DetailContent组件，传入post对象和padding值
-  - **Error状态**：显示错误信息和重试按钮，点击重试重新调用loadPostDetail
-
-#### 异步数据加载机制
-DetailScreen使用LaunchedEffect实现数据加载的生命周期管理：
-
-**LaunchedEffect触发时机**
-- 以postId作为key参数，当postId变化时重新执行
-- 在Composable首次组合时自动触发
-- 调用 `viewModel.loadPostDetail(postId)` 启动异步加载
-
-**状态流订阅**
-- 使用 `collectAsState()` 订阅ViewModel的uiState状态流
-- 状态变化时自动触发UI重组
-- by关键字实现自动解包State对象
-
-**数据流示意**：
-```
-用户点击HomeScreen的PostCard
-    ↓
-NavController导航到DetailScreen(postId)
-    ↓
-LaunchedEffect触发 → viewModel.loadPostDetail(postId)
-    ↓
-ViewModel更新uiState: Loading → Success/Error
-    ↓
-DetailScreen观察到状态变化，重组UI显示对应内容
-```
-
+| 功能项 | 技术要点                            | 文件位置 |
+|--------|---------------------------------|----------|
+| 详情页导航 | Navigation Compose + postId参数传递 | `NavGraph.kt` |
+| 数据加载 | HomeScreen传递对象                  | `DetailViewModel.kt:41-74` |
+| 横滑图片轮播 | `HorizontalPager` + 进度指示器       | `DetailContent.kt:86-134` |
+| 宽高比自适应 | 读取`Clip.displayAspectRatio`动态设置 | `DetailContent.kt:99` |
+| 点赞交互 | 即时UI更新 + SharedPreferences持久化   | `DetailViewModel.kt:76-95` |
+| 关注功能 | UI更新 + SP + Room双写              | `DetailViewModel.kt:97-123` |
+| 作者信息展示 | 头像 + 昵称 + 关注按钮                  | `DetailTopBar.kt:22-82` |
+| 底部操作栏 | 评论框(禁用) + 点赞/评论/收藏/分享按钮         | `DetailBottomBar.kt:23-119` |
 ---
-
-### 3.2 DetailViewModel实现
-![detail.image](https://github.com/haoyuh3/CrossiantApp/blob/b428012a7e6a35b8993e9b32c2105aeb4c8a896e/Progress/DetailScreen.png)
-
-#### loadPostDetail方法逻辑
-
-**方法职责**
-- 接收postId参数作为查询标识
-- 使用viewModelScope.launch启动协程，确保生命周期安全
-
-**状态转换流程**
-
-**1. 初始化Loading状态**
-   - 首先设置 `_uiState.value = DetailUiState.Loading`
-   - 触发UI显示加载动画
-
-**2. 调用UseCase获取数据**
-   - 调用 `getPostDetailUseCase(postId)` 执行数据获取逻辑
-   - UseCase内部优先从Room数据库读取缓存
-
-**3. 本地状态填充**
-
-**4. 更新成功状态**
-   - 设置 `_uiState.value = DetailUiState.Success(enrichedPost)`
-   - 触发UI显示详情内容
-
-
-#### 数据来源说明
-
-**当前实现的数据源层级**：
-```
-DetailViewModel.loadPostDetail(postId)
-    ↓
-GetPostDetailUseCase(postId)
-    ├─ [优先] feedRepository.getCachedPost(postId)  // 从Room数据库查询
-    │           └─ 命中缓存 → 直接返回Post对象
-    │
-    └─ [降级] feedRepository.getFeed()      // 缓存未命中时调用API
-```
-
-**状态填充的数据源**：
-- `isLiked` 和 `likeCount`：从SharedPreferences读取（key: `like_status_{postId}`）
-- `author.isFollowed`：从SharedPreferences读取（key: `follow_status_{userId}`）
-- 其他字段（title/content/clips等）：来自Room数据库或API响应
-
-#### 用户交互处理
-
-**toggleLike方法**
-- 获取当前Success状态下的Post对象
-- 切换点赞状态：`newLikedStatus = !post.isLiked`
-- 更新点赞数：点赞+1，取消点赞-1（最小为0）
-- 立即更新SharedPreferences持久化存储
-- 使用copy创建新Post对象，更新UI状态
-
-**toggleFollow方法**
-- 获取当前Success状态下的Author对象
-- 切换关注状态：`newFollowStatus = !author.isFollowed`
-- 立即更新SharedPreferences存储关注状态
-- 在后台IO线程同步更新Room数据库：
-  - 关注：插入FollowedUserEntity记录
-  - 取关：删除对应的FollowedUserEntity记录
-- 使用copy创建新Post对象，更新UI状态
-
----
-
-### 3.3 DetailContent实现
-
-DetailContent负责展示帖子的核心内容，采用纵向滚动的布局结构。
-
 #### 整体布局结构
 
 **外层容器**
@@ -521,168 +404,385 @@ DetailContent负责展示帖子的核心内容，采用纵向滚动的布局结�
 **布局层次**（从上到下）：
 1. **横滑媒体区域**：ImagePagerSection组件显示图片/视频轮播
 2. **内容区域**：包裹在带水平padding的Column中
-   - 标题区域：显示post.title，使用MaterialTheme.typography.titleLarge样式
-   - 正文区域：HashtagText组件显示带话题高亮的内容
-   - 时间区域：显示格式化的发布时间
-3. **底部留白**：Spacer高度80dp，避免内容被BottomBar遮挡
-
-#### 横滑图片容器实现（ImagePagerSection）
-
-**HorizontalPager核心配置**
-
-**状态管理**
-- 使用 `rememberPagerState(pageCount = { clips.size })` 创建分页状态
-- pageCount为lambda形式，支持动态更新图片数量
-- pagerState跟踪当前页索引（currentPage）
-
-**宽高比适配**
-- 读取第一张图片的 `displayAspectRatio` 属性
-- 使用 `aspectRatio(ratio)` 修饰符设置容器宽高比
-- 确保不同尺寸图片显示时容器高度自适应
-
-**分页内容渲染**
-- HorizontalPager的content lambda接收page参数（当前页索引）
-- 根据 `clips[page].type` 判断媒体类型：
-  - **ClipType.IMAGE**：使用SubcomposeAsyncImage加载图片
-    - model参数为图片URL
-    - contentScale设置为Crop实现居中裁剪
-    - loading状态显示CircularProgressIndicator
-    - error状态显示"加载失败"文本
-  - **ClipType.VIDEO**：调用VideoPlayerView组件（当前为占位实现）
-
-**进度指示器**
-- 仅在图片数量大于1时显示
-- 使用LinearProgressIndicator展示浏览进度
-- 进度计算公式：`(currentPage + 1) / totalPages`
-- 高度设置为2dp的细线样式
-
-#### 话题高亮文本实现（HashtagText）
-
-**AnnotatedString构建逻辑**
-
-**数据预处理**
-- 将hashtags列表按start位置升序排序
-- 确保从左到右依次处理话题词
-
-**字符串分段拼接**
-- 遍历排序后的hashtags列表
-- 对于每个hashtag：
-  1. 先添加话题词之前的普通文本
-  2. 使用pushStringAnnotation标记话题词区域（tag="HASHTAG"）
-  3. 使用withStyle应用蓝色加粗样式（Color(0xFF1E90FF)）
-  4. 添加话题词文本
-  5. 调用pop()结束标注
-  6. 更新lastIndex为hashtag.end
-- 循环结束后添加最后的普通文本
+    - 标题区域：显示post.title
+    - 正文区域：HashtagText组件显示带话题高亮的内容
+    - 时间区域：显示格式化的发布时间
+3. **底部留白**：避免内容被BottomBar遮挡
+   ![detail.image](https://github.com/haoyuh3/CrossiantApp/blob/b428012a7e6a35b8993e9b32c2105aeb4c8a896e/Progress/DetailScreen.png)
 ---
 
-### 3.4 DetailTopBar和DetailBottomBar实现
+#### 3.5个人中心模块
 
-#### DetailTopBar组件功能
+| 功能项 | 技术要点 | 文件位置 |
+|--------|----------|----------|
+| 个人信息展示 | 头像 + 昵称 + 简介 | `ProfileScreen.kt:34-124` |
+| 统计数据展示 | 关注/粉丝/获赞数（占位数据） | `ProfileScreen.kt:92-123` |
+| 头像编辑 | 图片选择器 + URI权限持久化 | `ProfileScreen.kt:150-169` |
+| 昵称/简介编辑 | Dialog编辑 + SharedPreferences存储 | `ProfileScreen.kt:254-333` |
+| 编辑图标 | 点击弹出编辑对话框 | `ProfileScreen.kt:127-147` |
 
-**布局结构**
+#### 个人首页
+- **个人** 头像，关注，粉丝，喜欢
+- **实现要求**：
+    - **Column** 是一个垂直方向的线性布局 包括(ICON + TXT + ROW)
+    - **Row** 是一个水平方向的线性布局 包括(关注，粉丝，喜欢)
+---
+![profile.image](https://github.com/haoyuh3/CrossiantApp/blob/98f68030e7099a4af952949c4c9bec27a9216fd5/Progress/profile.png)
+---
+#### 3.6 关注列表
+- 头像 + 名字 + 关注按钮
+- 使用Room数据库存储关注列表
+---
+![followList.image](https://github.com/haoyuh3/CrossiantApp/blob/595c0d508866488ca4d5dd76a641ef5e8a38d333/Progress/followList.png)
+---
 
-DetailTopBar基于Material3的TopAppBar组件实现，包含三个核心区域：
+#### 3.7 性能优化技术
 
-**导航图标区域**
-- 显示返回箭头图标（ArrowBack）
-- 点击触发onNavigateBack回调，执行返回导航
-- 使用IconButton包裹确保触摸区域足够大
+**1. LazyList的Key优化**
+```kotlin
+LazyVerticalStaggeredGrid {
+    items(
+        items = posts,
+        key = { post -> post.postId }  // 稳定的唯一标识符
+    ) { post ->
+        PostCard(post)
+    }
+}
+```
+**效果：**
+- 列表项位置变化时，Compose能识别同一对象，避免重建
+- 减少不必要的重组，提升滚动性能
 
-**标题区域**
-- 使用Row水平排列作者信息和关注按钮
-- **作者头像**：
-  - SubcomposeAsyncImage异步加载头像图片
-  - 尺寸32dp，使用CircleShape裁剪为圆形
-  - contentScale设置为Crop确保填充
-- **作者昵称**：
-  - 显示post.author.nickname
-  - 使用titleMedium样式
-- **关注按钮**：
-  - OutlinedButton实现空心按钮样式
-  - 根据isFollowed状态动态切换：
-    - 已关注：灰色边框 + 灰色文字 + "已关注"文本
-    - 未关注：红色边框 + 红色文字 + "关注"文本
-  - 高度32dp，水平padding 8dp保持紧凑
-  - 点击触发onFollowClick回调执行关注/取关操作
+**2. 异步图片加载**
+```kotlin
+// 使用Coil的SubcomposeAsyncImage实现渐进式加载
+SubcomposeAsyncImage(
+    model = imageUrl,
+    loading = { CircularProgressIndicator() },    // 加载态
+    error = { Text("加载失败") },                  // 错误态
+    contentScale = ContentScale.Crop
+)
+```
 
-**样式配置**
-- 背景色设置为纯白色（containerColor = Color.White）
-- 无阴影效果，保持扁平设计
+### 4. 数据层设计
 
-#### DetailBottomBar组件功能
+#### 4.1 数据库设计（Room）
 
-**布局结构**
+**Schema设计：**
 
-DetailBottomBar使用Surface容器实现底部工具栏，shadowElevation设置为8dp产生悬浮效果。
+```sql
+-- posts表（帖子主表）
+CREATE TABLE posts (
+    post_id TEXT PRIMARY KEY NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    hashtags_json TEXT NOT NULL,      -- JSON序列化的List<Hashtag>
+    create_time INTEGER,
+    author_json TEXT NOT NULL,         -- JSON序列化的Author对象
+    clips_json TEXT NOT NULL,          -- JSON序列化的List<Clip>
+    music_json TEXT,                   
+    like_count INTEGER DEFAULT 0,
+    is_liked INTEGER DEFAULT 0         
+);
 
-**快捷评论框**
-- OutlinedTextField组件实现圆角输入框
-- placeholder显示"说点什么..."提示文本
-- **当前限制**：enabled设置为false禁用输入功能
-- 原因：评论功能暂未实现，仅作为占位UI
-- shape设置为RoundedCornerShape(20dp)实现胶囊形状
-- 权重weight(1f)使其占据剩余空间
-
-**点赞按钮**
-- IconButton包裹Icon和Text的组合
-- **图标切换逻辑**：
-  - 已点赞：实心红心图标（Favorite）+ 红色
-  - 未点赞：空心红心图标（FavoriteBorder）+ 灰色
-- **数字显示**：
-  - 调用formatCount函数格式化点赞数
-  - 1万以上显示为"1.0w"格式（如15000 → 1.5w）
-  - 颜色与图标保持一致
-- 点击触发onLikeClick回调执行点赞/取消点赞
-
-**评论按钮**
-- 显示邮件图标（MailOutline）
-- 灰色占位状态
-- onClick回调为空实现（TODO标记）
-
-**收藏按钮**
-- 显示加号圆圈图标（AddCircle）
-- 灰色占位状态
-- 功能待实现
-
-**分享按钮**
-- 显示分享图标（Share）
-- 当前实现仅打印日志
-- 预留系统分享功能接入点
-
-**工具函数formatCount**
-- 接收Int类型的count参数
-- 判断逻辑：
-  - count >= 10000：返回格式化字符串保留1位小数（如15678 → "1.6w"）
-  - count < 10000：直接返回toString()（如123 → "123"）
+-- followed_users表（关注用户表）
+CREATE TABLE followed_users (
+    userId TEXT PRIMARY KEY NOT NULL,
+    nickname TEXT NOT NULL,
+    avatar TEXT NOT NULL,
+    bio TEXT DEFAULT '',
+    followedTime INTEGER DEFAULT (strftime('%s', 'now'))
+);
+```
+**DAO接口设计： app/src/main/java/com/bytedance/croissantapp/data/local/dao/PostDao.java**
 
 ---
 
-## 4. 问题
+#### 4.2 网络层设计（Retrofit）
 
-### 当前存在的设计问题
+**API接口定义：**
 
-#### 问题1: 用户操作缺少API调用
-- **现象**：toggleLike和toggleFollow方法只更新本地存储（SharedPreferences和Room），没有调用后端API 加载PostScreen时使用本地数据库
-- **后果**：
-  - 用户的点赞/关注操作完全不会同步到服务器
-  - 换设备登录后所有操作记录丢失
-  - 无法实现跨端数据同步
-  - 其他用户看不到你的点赞/关注
+```kotlin
+interface FeedApi {
+    @GET("feed/")
+    suspend fun getFeed(
+        @Query("count") count: Int,
+        @Query("accept_video_clip") acceptVideoClip: Boolean = false
+    ): FeedResponse
 
-#### 问题2: 数据永不失效
-- **现象**：Room数据库缓存没有TTL（Time-To-Live）机制
-- **后果**：
-  - 用户看到的点赞数可能是1小时前/1天前的旧数据
-  - 作者的个人简介更新后，应用中永远显示旧版本
-  - 用户头像更换后，应用中仍显示旧头像
+    companion object {
+        const val BASE_URL = "https://college-training-camp.bytedance.com/"
+    }
+}
+```
+**网络配置（AppModule.kt）：**
+
+---
+
+#### 4.3 数据转换层（Mapper）
+
+**转换链路：**
+```
+Network DTO ←→ Domain Model ←→ Database Entity
+  (PostDto)      (Post)          (PostEntity)
+```
+
+**关键Mapper实现：**
+
+```kotlin
+// data/model/FeedResponse.kt
+fun PostDto.toDomain(): Post {}
+// data/local/mapper/PostMapper.kt
+fun Post.toEntity(): PostEntity {}
+fun PostEntity.toDomain(): Post {}
+```
+
+**设计原则：**
+- Domain Model是纯业务模型，不包含任何序列化注解
+- DTO负责网络传输，使用`@SerializedName`适配后端字段
+- Entity负责数据库存储
+
+---
+
+### 5. 导航系统
+
+#### Navigation Compose架构
+- 本项目使用**Navigation Compose**实现单Activity多屏幕架构：
+
+#### 底部导航栏实现： BottomNavigationBar.kt
+- **Tab列表**（从左到右）：首页、朋友、相机(+)、消息、我
+- **实现要求**：
+    - 只需支持"首页"和"我"的点击
+    - 启动后默认在"首页"
+    - 使用 `NavigationBarItem`
+    -
+#### 导航系统配置
+- 理解Navigation Compose
+  **Navigation Compose** 是Jetpack Compose的导航库：
+- 使用rememberNavController() 保持navigator controller
+- 实现NavGraph (导航页面)
+- 实现NavHost (页面容器)
+- composable(route = Routes.HOME)/ Routes.Profile 配置导航路由
+---
+### 6. 依赖注入（Hilt）AppModule.kt
+---
+### 7. 工具类
+
+| 工具类 | 功能 | 文件位置 |
+|--------|------|----------|
+| **DateUtil** | 时间格式化（相对时间："2小时前"） | `util/DateUtil.kt` |
+| **LikeCntUtil** | 数字格式化（10000 → "1.0w"） | `util/LikeCntUtil.kt` |
+| **ImageUtil** | 图片处理工具 | `util/ImageUtil.kt` |
+| **Constants** | 应用常量定义 | `util/Constants.kt` |
+
+---
+
+### ⚠️ 未实现/待优化功能
+
+| 功能项 | 当前状态   | 影响范围 | 优先级 |
+|--------|--------|----------|--------|
+| **视频播放** | 无封面可播放 | 详情页视频显示为黑色框 + 播放图标 | 🔴 高 |
+| **评论功能** | 输入框禁用  | 无法发表评论 | 🟡 中 |
+| **收藏功能** | 按钮占位   | 点击无效果 | 🟢 低 |
+| **分享功能** | 仅打印日志  | 无法分享内容 | 🟢 低 |
+| **API同步** | 仅本地存储  | 点赞/关注不同步到服务器 | 🔴 高 |
+| **缓存过期策略** | 永久缓存   | 数据可能过时 | 🟡 中 |
+| **离线操作队列** | 无队列    | 离线操作不会重试 | 🟡 中 |
+
+---
+
+## 个人思考
+
+### 1. 架构设计的收获
+---
+#### 1.1 MVVM在Compose中的适配
+
+传统MVVM使用LiveData + XML，迁移到Compose后的变化：
+
+| 对比项 | 传统MVVM | Compose MVVM |
+|--------|---------|--------------|
+| **状态容器** | LiveData | StateFlow / State |
+| **UI更新触发** | observe(lifecycle) { } | collectAsState() |
+| **双向绑定** | DataBinding | 不推荐（单向数据流） |
+| **生命周期感知** | LiveData自动处理 | collectAsStateWithLifecycle() |
+---
+
+### 2. 技术选型的反思
+
+#### 2.1 Jetpack Compose的深度应用
+
+**选型理由：**
+- **声明式UI**减少80%的样板代码（相比XML + findViewById）
+- **预览功能**：`@Preview`注解实现组件级调试
+
+**实践中的"坑"：**
+
+1. **重组性能问题**
+2. **副作用管理混淆**
+    - `LaunchedEffect`：一次性操作（如数据加载）
+    - `DisposableEffect`：需要清理的副作用（如注册监听器）
+    - `SideEffect`：每次重组都执行（极少使用）
+
+**经验总结：**
+- 初期重组开销大，需要配合`remember`、`derivedStateOf`优化
+- 学习曲线陡峭，但掌握后开发效率显著提升
+
+---
 
 
-#### 问题3: 缺少离线优先（Offline-First）策略
-- **现象**：网络失败时用户操作直接丢失，没有操作队列/重试机制
-- **后果**：
-  - 用户在地铁中（无网络）点赞5条帖子，UI显示已点赞，但从未同步到服务器
-  - 切换到WiFi后也不会自动同步
-  - 用户以为已点赞，但服务器无记录
+#### 2.2 离线优先策略的局限
 
-#### 问题4: 视频播放器  主页面视频应该只显示封面
+**当前实现：**
+```kotlin
+suspend fun getFeed(): Result<List<Post>> {
+    return try {
+        // 1. 尝试网络请求
+        val posts = api.getFeed()
+        // 2. 成功后更新缓存
+        dao.replaceAll(posts)
+        Result.success(posts)
+    } catch (e: Exception) {
+        // 3. 失败时读取缓存
+        val cached = dao.getAllPosts()
+        if (cached.isNotEmpty()) Result.success(cached)
+        else Result.failure(e)
+    }
+}
+```
+
+**存在的问题：**
+
+1. **缺少缓存过期策略（TTL）**
+    - 用户可能看到一周前的旧数据
+    - 解决方案：添加`cached_at`字段，超过1小时强制刷新
+---
+
+### 3. 当前架构的不足与改进方案
+
+#### 3.1 关键问题：用户操作未同步到服务器
+
+**后果：**
+- 用户换设备后所有点赞记录丢失
+- 作者看不到点赞数增加
+- 无法实现跨端同步
+
+**改进方案1：乐观更新 + 后台同步**
+
+#### 3.2 缺少数据一致性保证
+
+**问题场景：**
+```
+时间线：
+10:00 - 用户A在首页点赞帖子X（本地计数 = 100）
+10:05 - 用户B也点赞了帖子X（服务器计数 = 101）
+10:10 - 用户A刷新首页（API返回计数 = 200，用户A的点赞被覆盖！）
+```
+
+**根本原因：**
+- 点赞数同时存在于SharedPreferences和API响应
+- 没有冲突解决策略
+---
+
+### 4. 项目总结与未来展望
+
+#### 4.1 技术能力提升
+
+通过Croissant项目的开发，系统性地掌握了：
+
+| 技术领域 | 具体收获 | 应用场景 |
+|---------|---------|----------|
+| **Jetpack Compose** | 声明式UI、状态管理、性能优化 | 现代Android开发必备 |
+| **Clean Architecture** | 分层设计、依赖倒置、测试驱动 | 中大型项目架构 |
+| **Kotlin Coroutines** | 异步编程、结构化并发、Flow | 网络请求、数据库操作 |
+| **Hilt依赖注入** | 模块化、可测试性、对象生命周期管理 | 企业级应用开发 |
+| **Room数据库** | ORM映射、数据持久化、迁移管理 | 离线优先应用 |
+
+---
+
+#### 4.2 待实现功能规划
+
+**短期目标（1-2周）：**
+- [ ] **音乐播放功能**
+-
+- [ ] **API同步机制**
+    - 点赞/关注操作调用后端API
+    - WorkManager实现离线队列
+    - 冲突解决策略
+
+**中期目标（1个月）：**
+- [ ] **评论系统**
+    - 评论列表展示（RecyclerView → LazyColumn）
+    - 回复功能（嵌套评论）
+    - @提及用户
+
+- [ ] **缓存策略优化**
+    - 添加TTL（Time-To-Live）
+    - 差异更新（Delta Sync）
+    - 缓存容量管理（LRU淘汰）
+---
+
+#### 4.3 反思与感悟
+
+**成功经验：**
+1. **渐进式开发**：先实现核心功能（Feed流），再完善细节（点赞、关注）
+2. **文档驱动**：在开发过程中同步更新README，降低维护成本
+3. **工具链熟悉**：熟练使用Android Studio调试工具、Layout Inspector、Profiler
+
+**遇到的挑战：**
+1. **Compose学习曲线**：初期对重组机制理解不足，导致性能问题
+2. **状态管理混乱**：一度同时使用LiveData、StateFlow、State，后统一为StateFlow
+3. **过度设计**：早期为简单功能创建过多抽象层，后期简化
+
+
+## 附录
+
+### A. 项目运行环境
+
+| 项目 | 要求 |
+|------|------|
+| **最低Android版本** | API 24 (Android 7.0) |
+| **目标Android版本** | API 36 (Android 14+) |
+| **Kotlin版本** | 2.0.21 |
+| **Gradle版本** | 8.13.1 |
+| **JDK版本** | JDK 11 |
+
+### B. 核心依赖清单
+
+```kotlin
+dependencies {
+    // Compose
+    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-compiler:2.48")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+}
+```
+
+### C. 参考资源
+
+- [Jetpack Compose官方文档](https://developer.android.com/jetpack/compose)
+- [Android架构指南](https://developer.android.com/topic/architecture)
+- [Kotlin Coroutines官方指南](https://kotlinlang.org/docs/coroutines-guide.html)
+- [Room数据库文档](https://developer.android.com/training/data-storage/room)
+
+---
+
+**文档版本**：v1.0
+**最后更新**：2025-12-01
+**作者**：Croissant项目组
+**联系方式**：[项目仓库](https://github.com/haoyuh3/CrossiantApp)

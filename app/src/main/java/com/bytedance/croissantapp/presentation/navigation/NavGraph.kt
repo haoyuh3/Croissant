@@ -3,12 +3,15 @@ package com.bytedance.croissantapp.presentation.navigation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.bytedance.croissantapp.domain.model.Post
 import com.bytedance.croissantapp.presentation.detail.DetailScreen
+import com.bytedance.croissantapp.presentation.detail.VideoFeedScreen
 import com.bytedance.croissantapp.presentation.hashtag.HashtagScreen
 import com.bytedance.croissantapp.presentation.home.HomeScreen
 import com.bytedance.croissantapp.presentation.profile.ProfileScreen
@@ -20,12 +23,15 @@ object Routes {
     const val HOME = "home"
     const val PROFILE = "profile"
     const val DETAIL = "detail/{postId}" // 详情页，带参数
+    const val VIDEO_FEED = "video_feed/{postId}/{index}" // 视频流页面
 
     const val HASHTAG ="hashtag/{hashtag}"
 
 
     // 生成详情页路由的辅助函数
     fun detail(postId: String) = "detail/$postId"
+    // 生成视频流路由的辅助函数
+    fun videoFeed(postId: String, index: Int) = "video_feed/$postId/$index"
     // 话题页路由
     fun hashtag(hashtag: String) = "hashtag/$hashtag"
 }
@@ -60,17 +66,29 @@ fun NavGraph(
                 .savedStateHandle
                 .getStateFlow("refresh_from_detail", false)
 
+            // 获取 HomeViewModel 的 posts 列表
+            val homeViewModel: com.bytedance.croissantapp.presentation.home.HomeViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+            val posts by homeViewModel.posts.collectAsState()
+
             HomeScreen(
                 sharedTransitionScope = this@SharedTransitionLayout, // 共享容器
                 animatedVisibilityScope = this@composable, // 动画可见性作用域
+                viewModel = homeViewModel,
                 onNavigateToDetail = { post ->
-                    // 跳转到详情页
-                    navController.navigate(Routes.detail(post.postId))
+                    // 使用视频流页面（支持上下滑动）
+//                    val clickedIndex = posts.indexOfFirst { it.postId == post.postId }
+//                    navController.navigate(Routes.videoFeed(post.postId, clickedIndex.coerceAtLeast(0)))
+//
+//                    // 传递完整的视频列表
+//                    navController.currentBackStackEntry
+//                        ?.savedStateHandle
+//                        ?.set("post_list", ArrayList(posts))
 
-                    // Post 对象存入详情页的 SavedStateHandle
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("selected_post", post)
+                    // 如果想用原来的单页详情，注释上面的代码，取消注释下面的：
+                     navController.navigate(Routes.detail(post.postId))
+                     navController.currentBackStackEntry
+                         ?.savedStateHandle
+                         ?.set("selected_post", post)
                 },
                 shouldRefresh = shouldRefresh
             )
@@ -109,6 +127,38 @@ fun NavGraph(
 
             )
         }
+
+//        // 视频流页面（垂直滑动）
+//        composable(route = Routes.VIDEO_FEED) { backStackEntry ->
+//            // 获取路由参数
+//            val postId = backStackEntry.arguments?.getString("postId") ?: ""
+//            val index = backStackEntry.arguments?.getString("index")?.toIntOrNull() ?: 0
+//
+//            // 从 SavedStateHandle 获取视频列表
+//            val postList = backStackEntry.savedStateHandle.get<ArrayList<Post>>("post_list")
+//                ?: arrayListOf()
+//
+//            if (postList.isNotEmpty()) {
+//                VideoFeedScreen(
+//                    postList = postList,
+//                    initialIndex = index,
+//                    sharedTransitionScope = this@SharedTransitionLayout,
+//                    animatedVisibilityScope = this@composable,
+//                    onNavigateBack = {
+//                        // 返回前设置刷新信号
+//                        navController.previousBackStackEntry
+//                            ?.savedStateHandle
+//                            ?.set("refresh_from_detail", true)
+//
+//                        navController.navigateUp()
+//                    },
+//                    onHashtagClick = { hashtag ->
+//                        val encoded = java.net.URLEncoder.encode(hashtag, "UTF-8")
+//                        navController.navigate(Routes.hashtag(encoded))
+//                    }
+//                )
+//            }
+//        }
 
         composable(route = Routes.HASHTAG) { backStackEntry ->
             val hashtag = java.net.URLDecoder.decode(
