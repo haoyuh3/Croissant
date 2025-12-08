@@ -459,6 +459,21 @@ SubcomposeAsyncImage(
     error = { Text("加载失败") },                  // 错误态
     contentScale = ContentScale.Crop
 )
+
+```
+**3. 返回主页面图片渲染**
+**困难：**
+- 详情页返回时, 点击返回按钮跳转后执行动画, 过一段时间图片才加载
+- 原因图片需要提前渲染
+```kotlin
+onNavigateBack = {
+    // 返回前设置刷新信号（在动画开始前立即触发）
+    navController.previousBackStackEntry
+        ?.savedStateHandle
+        ?.set("refresh_from_detail", true)
+
+    navController.navigateUp()
+}
 ```
 
 ### 4. 数据层设计
@@ -487,7 +502,6 @@ CREATE TABLE followed_users (
     userId TEXT PRIMARY KEY NOT NULL,
     nickname TEXT NOT NULL,
     avatar TEXT NOT NULL,
-    bio TEXT DEFAULT '',
     followedTime INTEGER DEFAULT (strftime('%s', 'now'))
 );
 ```
@@ -577,6 +591,8 @@ Network DTO ←→ Domain Model ←→ Database Entity
 - LazyVerticalStaggeredGrid
 - EXOPlayer
 - HorizontalPager
+- Card
+- NavigationBarItem
 ---
 
 ### 2. 技术选型的反思
@@ -622,6 +638,8 @@ Network DTO ←→ Domain Model ←→ Database Entity
 #### 3.4 详情页面添加自动轮播功能
 - 展示首张照片后，一定时间内切换下一张
 
+#### 3.5 缺少视频封面
+
 ### 4. 项目总结与未来展望
 
 #### 4.1 技术能力提升
@@ -633,7 +651,7 @@ Network DTO ←→ Domain Model ←→ Database Entity
 | **Jetpack Compose** | 声明式UI、状态管理、性能优化 | 现代Android开发必备 |
 | **Clean Architecture** | 分层设计、依赖倒置、测试驱动 | 中大型项目架构 |
 | **Kotlin Coroutines** | 异步编程、结构化并发、Flow | 网络请求、数据库操作 |
-| **Hilt依赖注入** | 模块化、可测试性、对象生命周期管理 | 企业级应用开发 |
+| **Hilt依赖注入** | 模块化、可测试性、对象生命周期管理 |  |
 | **Room数据库** | ORM映射、数据持久化、迁移管理 | 离线优先应用 |
 
 ---
@@ -642,13 +660,12 @@ Network DTO ←→ Domain Model ←→ Database Entity
 
 **目标**
 - [ ] **音乐播放功能**
+- - [ ] **图片轮播功能**
 - [ ] **视屏流竖滑**
-    - 点赞/关注操作调用后端API
-    - WorkManager实现离线队列
-    - 冲突解决策略
+    - 目前实现限制竖滑(只能浏览只包含一个视频的Post)
 - [ ] **评论系统**
     - 评论列表展示（RecyclerView → LazyColumn）
-    - 回复功能（嵌套评论）
+    - 回复功能
     - @提及用户
 - [ ] **无网/弱网络**
     - 重试刷新
@@ -661,6 +678,8 @@ Network DTO ←→ Domain Model ←→ Database Entity
 1. **Compose学习曲线**：初期对重组机制理解不足，导致性能问题
 2. **状态管理混乱**：一度同时使用LiveData、StateFlow、State，后统一为StateFlow
 3. **数据存储选型**： 部分数据一开始使用sharepreference存储，后续使用Room开发，存在部分数据不一致问题
+4. **无网络ViewModel状态管理**: 一开始状态设计简单, 忽略网络中途恢复逻辑 后续重新设计状态转移函数
+5. **客户端开发**注重用户点击率, UI, 无网络弱网络设计, 双列图片视频流目的都是为了增加用户点击量优化用户体验
 
 
 ## 附录
