@@ -336,8 +336,7 @@ Column
 ---
 
 ##### 双列瀑布流实现
-
-**LazyVerticalStaggeredGrid配置** (presentation/home/HomeScreen.kt:153-195)
+- LazyVerticalStaggeredGrid配置 (presentation/home/HomeScreen.kt:153-195)
 - 使用LazyVerticalStaggeredGrid组件
 ---
 ##### VideoPlayer实现
@@ -350,7 +349,7 @@ Column
 ---
 
 ##### HomeViewModel
-**1. 首屏加载**
+- **1. 首屏加载**
 **流程**：
 1. 设置加载状态 `InitLoading`
 2. 调用 `GetFeedUseCase` 获取20条数据
@@ -358,18 +357,11 @@ Column
 4. 更新 `_posts` 和 `_uiState`
 5. 根据数据是否为空设置 `Empty` 或 `Success` 状态
 
-**2. PullRefresh 功能实现：** (presentation/home/HomeViewModel.kt:93-114)
-```kotlin
- // 下拉刷新状态：连接手势和U
-val pullRefreshState = rememberPullRefreshState(
-    refreshing = isRefreshing,
-    onRefresh = { viewModel.refresh() }
-)
-```
+- **2. PullRefresh 功能实现：** (presentation/home/HomeViewModel.kt:93-114)
 - HomeScreen捕捉手势变化，异步改变状态
 - HomeViewModel执行刷新逻辑
 ---
-**3. LoadMore 功能实现：** (presentation/home/HomeViewModel.kt)
+- **3. LoadMore 功能实现：** (presentation/home/HomeViewModel.kt)
 - 双列瀑布流下方放置一个加载更多组件。当compose重组加载更多组件，UI状态更新
 - HomeViewModel调用loadMore逻辑
 
@@ -665,7 +657,7 @@ Network DTO ←→ Domain Model ←→ Database Entity
 
 **目标**
 - [ ] **音乐播放功能**
-- - [ ] **图片轮播功能**
+- [ ] **图片轮播功能**
 - [ ] **视屏流竖滑**
     - 目前实现限制竖滑(只能浏览只包含一个视频的Post)
 - [ ] **评论系统**
