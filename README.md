@@ -552,7 +552,6 @@ Network DTO ←→ Domain Model ←→ Database Entity
     - 只需支持"首页"和"我"的点击
     - 启动后默认在"首页"
     - 使用 `NavigationBarItem`
-    -
 #### 导航系统配置
 - 理解Navigation Compose
   **Navigation Compose** 是Jetpack Compose的导航库：
@@ -732,6 +731,6 @@ dependencies {
 ---
 
 **文档版本**：v1.0
-**最后更新**：2025-12-01
+**最后更新**：2025-12-10
 **作者**：黄浩宇
 **联系方式**：[项目仓库](https://github.com/haoyuh3/CrossiantApp)
